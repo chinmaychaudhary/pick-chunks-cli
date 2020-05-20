@@ -5,17 +5,17 @@ const importJsx = require('import-jsx');
 const {render} = require('ink');
 const meow = require('meow');
 
-const ui = importJsx('./ui');
+const ui = importJsx('./ChooseDynamicImports');
 
 const cli = meow(`
 	Usage
-	  $ pick-chunks
+	  $ ast
 
 	Options
 		--name  Your name
 
 	Examples
-	  $ pick-chunks --name=Jane
+	  $ ast --name=Jane
 	  Hello, Jane
 `);
 

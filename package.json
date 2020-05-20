@@ -1,5 +1,5 @@
 {
-	"name": "pick-chunks",
+	"name": "ast",
 	"version": "0.0.0",
 	"license": "MIT",
 	"bin": "cli.js",
@@ -14,6 +14,8 @@
 		"ui.js"
 	],
 	"dependencies": {
+		"@babel/parser": "^7.9.6",
+		"@babel/traverse": "^7.9.6",
 		"import-jsx": "^4.0.0",
 		"ink": "^2.7.1",
 		"meow": "^7.0.1",

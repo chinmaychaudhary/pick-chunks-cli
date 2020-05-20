@@ -21,6 +21,8 @@ function getDynamicImports(filepath, shoudlDigDynamicImports, ans = [], visited 
     const imports = [];
     const dir = path.parse(filepath).dir;
 
+    visited[filepath] = true;
+
     traverse(ast, {
         ImportDeclaration(astPath){
             const p = astPath.node.source.value;
@@ -42,8 +44,8 @@ function getDynamicImports(filepath, shoudlDigDynamicImports, ans = [], visited 
         }
     });
 
-    imports.forEach(neighbour => {
-        getDynamicImports(neighbour, shoudlDigDynamicImports, ans);
+    imports.filter(fp => !visited[fp]).forEach(neighbour => {
+        getDynamicImports(neighbour, shoudlDigDynamicImports, ans, visited);
     })
     
     return ans;
