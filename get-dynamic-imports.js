@@ -7,12 +7,25 @@ function getChunkNameFromArgument(arg){
     return arg.leadingComments[0].value.match(/webpackChunkName="([^."].*)"/)[1];
 }
 
+function getContextualisedPath(filePath){
+    const fp = path.resolve(process.cwd(), CONTEXT, filePath + '.js');
+    return fs.existsSync(fp) ? fp : null;
+}
+
 function getFilePath(dir, filePath){
-    return path.resolve(dir, filePath + '.js')
+    return getContextualisedPath(filePath) || path.resolve(dir, filePath + '.js')
+}
+
+// same as webpack config context
+const CONTEXT = './code';
+
+function isContextualisedPath(filePath){
+    const fp = path.resolve(process.cwd(), CONTEXT, filePath + '.js');
+    return fs.existsSync(fp);
 }
 
 function shouldDigDeeper(filePath){
-    return filePath.startsWith('.');
+    return filePath.startsWith('.') || isContextualisedPath(filePath);
 }
 
 function getDynamicImports(filepath, shoudlDigDynamicImports, ans = [], visited = {}){

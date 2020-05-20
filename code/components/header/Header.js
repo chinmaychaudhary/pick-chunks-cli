@@ -1,4 +1,4 @@
 import _ from 'lodash';
 
 
-import( /* webpackChunkName="LeftSection" */'./LeftSection');
+import( /* webpackChunkName="LeftSection" */'components/header/LeftSection');
