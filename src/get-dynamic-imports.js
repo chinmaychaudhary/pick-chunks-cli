@@ -3,11 +3,11 @@ const traverse = require("@babel/traverse").default;
 const fs = require("fs");
 const path = require("path");
 const { getFilePath, getChunkNameFromArgument, isJsFile } = require("./utils");
-const _once = require('lodash/once');
+const _once = require("lodash/once");
 
 const parseCache = new Map();
 
-const getFileInfoMap = _once(() => require('../file-info-data.json'));
+const getFileInfoMap = _once(() => require("../file-info-data.json"));
 
 function readFileContent(filepath) {
 	try {
@@ -20,21 +20,29 @@ function readFileContent(filepath) {
 }
 
 function parseFile(filepath, srcContext) {
-	if (process.env.postProcess === '1') {
+	if (process.env.postProcess === "1") {
 		const fileInfoMap = getFileInfoMap();
-		const ans = fileInfoMap[filepath];
-		if(!ans){
-			console.log('missing', filepath);
+		let ans = fileInfoMap[filepath];
+		if (ans) {
+			return ans;
+		}
+		const adpFp = getFilePath(path.parse(filepath).dir, srcContext, filepath);
+		ans = fileInfoMap[adpFp];
+		fileInfoMap[filepath] = ans;
+		if (!ans) {
+			console.log("missing", adpFp);
 		}
 		return ans;
 	}
 
-	const memoAns = parseCache.get(filepath);
+	const adpFp = getFilePath(path.parse(filepath).dir, srcContext, filepath);
+	const memoAns = parseCache.get(adpFp);
 	if (memoAns) {
 		return memoAns;
 	}
 
-	const fileContent = readFileContent(filepath);
+	const dir = path.parse(adpFp).dir;
+	const fileContent = readFileContent(adpFp);
 	const staticImports = [];
 	let dynamicImports = new Map();
 	let ast;
@@ -45,11 +53,9 @@ function parseFile(filepath, srcContext) {
 			plugins: ["jsx", "typescript", "classProperties", "exportDefaultFrom"],
 		});
 	} catch (e) {
-		console.log(filepath);
+		console.log(adpFp);
 		debugger;
 	}
-
-	const dir = path.parse(filepath).dir;
 
 	traverse(ast, {
 		ImportDeclaration(astPath) {
@@ -86,7 +92,7 @@ function parseFile(filepath, srcContext) {
 
 	dynamicImports = [...dynamicImports.values()];
 	const ans = { staticImports, dynamicImports };
-	parseCache.set(filepath, ans);
+	parseCache.set(adpFp, ans);
 	return ans;
 }
 
