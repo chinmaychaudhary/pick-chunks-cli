@@ -1,20 +1,8 @@
 "use strict";
 
 const path = require("path");
-
-const emp = path.resolve(process.cwd(), "src/app/modules/careConsole/index.js");
-const tst = path.resolve(process.cwd(), "example-code/my-entry.js");
-
-const empContext = "./src";
-const tstContext = "./example-code";
-
-const ntree = tst;
-const ctx = tstContext;
-
-process.env.myContext = ctx;
-
 const React = require("react");
-const { useState, useMemo, useContext, useRef } = require("react");
+const { useState, useMemo, useContext, useRef, useCallback } = require("react");
 const PropTypes = require("prop-types");
 const { Text, Color, Box, AppContext, useInput } = require("ink");
 const { getDynamicImports } = require("./src/get-dynamic-imports");
@@ -23,14 +11,20 @@ function transformMapToArr(mp) {
 	return [...mp.values()];
 }
 
-function getChunks(fp, shouldDig) {
-	return transformMapToArr(getDynamicImports(fp, shouldDig));
+function getChunks(fp, context, shouldDig) {
+	return transformMapToArr(getDynamicImports(fp, context, shouldDig));
 }
 
 const App = ({ entry, context }) => {
 	const [current, setCurrent] = useState({ filepath: entry, chunkName: "" });
 	const [cursor, setCursor] = useState(0);
-	const dynamicImports = useMemo(() => getChunks(current.filepath), [
+	const getFileChunks = useCallback(
+		(fp, shouldDig) => {
+			return getChunks(fp, context, shouldDig);
+		},
+		[context]
+	);
+	const dynamicImports = useMemo(() => getFileChunks(current.filepath), [
 		current.filepath,
 	]);
 	const [selectedChunks, setSelectedChunks] = useState(new Set());
@@ -58,7 +52,7 @@ const App = ({ entry, context }) => {
 		}
 
 		if (input === "p") {
-			const di = getChunks(dynamicImports[cursor].filepath, true).map(
+			const di = getFileChunks(dynamicImports[cursor].filepath, true).map(
 				(it) => it.chunkName
 			);
 			setSelectedChunks(
@@ -67,7 +61,7 @@ const App = ({ entry, context }) => {
 		}
 
 		if (input === "d") {
-			const di = getChunks(dynamicImports[cursor].filepath, true).map(
+			const di = getFileChunks(dynamicImports[cursor].filepath, true).map(
 				(it) => it.chunkName
 			);
 			setSelectedChunks((sc) => {
@@ -147,8 +141,6 @@ App.propTypes = {
 };
 
 App.defaultProps = {
-	entry: ntree,
-	context: ctx,
 };
 
 module.exports = App;
