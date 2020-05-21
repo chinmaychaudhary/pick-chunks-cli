@@ -1,11 +1,9 @@
 #!/usr/bin/env node
-'use strict';
-const React = require('react');
-const importJsx = require('import-jsx');
-const {render} = require('ink');
-const meow = require('meow');
-
-const ui = importJsx('./ChooseDynamicImports');
+"use strict";
+const React = require("react");
+const importJsx = require("import-jsx");
+const { render } = require("ink");
+const meow = require("meow");
 
 const cli = meow(`
 	Usage
@@ -19,4 +17,5 @@ const cli = meow(`
 	  Hello, Jane
 `);
 
+const ui = importJsx("./ChooseDynamicImports");
 render(React.createElement(ui, cli.flags));

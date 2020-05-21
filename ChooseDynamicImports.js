@@ -1,17 +1,36 @@
-'use strict';
-const React = require('react');
-const { useState, useMemo, useContext, useRef } = require('react');
-const PropTypes = require('prop-types');
-const { Text, Color, Box, AppContext, useInput } = require('ink');
-const { getDynamicImports } = require('./get-dynamic-imports');
-const path = require('path');
+"use strict";
 
-const ENTRY = path.resolve(process.cwd(), 'code/my-entry.js');
+const path = require("path");
 
-const App = ({ entry }) => {
-	const [current, setCurrent] = useState({ filepath: entry, chunkName: '' });
+const emp = path.resolve(process.cwd(), "src/app/modules/careConsole/index.js");
+const tst = path.resolve(process.cwd(), "example-code/my-entry.js");
+
+const empContext = "./src";
+const tstContext = "./example-code";
+
+const ntree = tst;
+const ctx = tstContext;
+
+process.env.myContext = ctx;
+
+const React = require("react");
+const { useState, useMemo, useContext, useRef } = require("react");
+const PropTypes = require("prop-types");
+const { Text, Color, Box, AppContext, useInput } = require("ink");
+const { getDynamicImports } = require("./src/get-dynamic-imports");
+
+function transformMapToArr(mp) {
+	return [...mp.values()];
+}
+
+function getChunks(fp, shouldDig) {
+	return transformMapToArr(getDynamicImports(fp, shouldDig));
+}
+
+const App = ({ entry, context }) => {
+	const [current, setCurrent] = useState({ filepath: entry, chunkName: "" });
 	const [cursor, setCursor] = useState(0);
-	const dynamicImports = useMemo(() => getDynamicImports(current.filepath), [
+	const dynamicImports = useMemo(() => getChunks(current.filepath), [
 		current.filepath,
 	]);
 	const [selectedChunks, setSelectedChunks] = useState(new Set());
@@ -21,12 +40,25 @@ const App = ({ entry }) => {
 	const { exit } = useContext(AppContext);
 
 	useInput((input, key) => {
-		if (input === 'q') {
+		if (input === "q") {
 			exit();
 		}
 
-		if (input === 'p') {
-			const di = getDynamicImports(dynamicImports[cursor].filepath, true).map(
+		if (input === "s") {
+			setSelectedChunks(
+				(sc) => new Set([...sc, dynamicImports[cursor].chunkName])
+			);
+		}
+
+		if (input === "x") {
+			setSelectedChunks((sc) => {
+				sc.delete(dynamicImports[cursor].chunkName);
+				return new Set([...sc]);
+			});
+		}
+
+		if (input === "p") {
+			const di = getChunks(dynamicImports[cursor].filepath, true).map(
 				(it) => it.chunkName
 			);
 			setSelectedChunks(
@@ -34,8 +66,8 @@ const App = ({ entry }) => {
 			);
 		}
 
-		if (input === 'd') {
-			const di = getDynamicImports(dynamicImports[cursor].filepath, true).map(
+		if (input === "d") {
+			const di = getChunks(dynamicImports[cursor].filepath, true).map(
 				(it) => it.chunkName
 			);
 			setSelectedChunks((sc) => {
@@ -48,6 +80,7 @@ const App = ({ entry }) => {
 
 		if (key.leftArrow) {
 			if (stack.current.length) {
+				setCursor(0);
 				setCurrent(stack.current.pop());
 			}
 		}
@@ -72,11 +105,13 @@ const App = ({ entry }) => {
 			<Box flexDirection="column" paddingTop={2} paddingBottom={2}>
 				<Text>
 					{[
-						'Press `p` to pick',
-						'Press `d` to drop',
-						'Press `enter` to dig in',
-						'Press <- to go back',
-					].join('\n')}
+						"Press `s` to select node",
+						"Press `x` to delete a node",
+						"Press `p` to pick the entire tree",
+						"Press `d` to drop the entire tree",
+						"Press `enter` to dig in",
+						"Press <- to go back",
+					].join("\n")}
 				</Text>
 			</Box>
 			<Box flexDirection="column">
@@ -87,7 +122,7 @@ const App = ({ entry }) => {
 								cyanBright={cursor === index}
 								green={cursor !== index && selectedChunks.has(chunkName)}
 							>
-								{`${selectedChunks.has(chunkName) ? '+' : '-'} ${chunkName}`}
+								{`${selectedChunks.has(chunkName) ? "+" : "-"} ${chunkName}`}
 							</Color>
 						</Text>
 					);
@@ -98,7 +133,7 @@ const App = ({ entry }) => {
 				<Box flexDirection="column" paddingTop={2}>
 					<Text>Selected Chunks:</Text>
 					<Box flexDirection="column">
-						<Text>{[...selectedChunks].join(',')}</Text>
+						<Text>{[...selectedChunks].join(",")}</Text>
 					</Box>
 				</Box>
 			)}
@@ -108,10 +143,12 @@ const App = ({ entry }) => {
 
 App.propTypes = {
 	entry: PropTypes.string,
+	context: PropTypes.string,
 };
 
 App.defaultProps = {
-	entry: ENTRY,
+	entry: ntree,
+	context: ctx,
 };
 
 module.exports = App;
