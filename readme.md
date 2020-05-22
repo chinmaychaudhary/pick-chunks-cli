@@ -6,23 +6,24 @@
 ## Install
 
 ```bash
-$ npm install --global pick-chunks
+$ npm install --global pick-chunks-cli
 ```
 
 
 ## CLI
 
 ```
-$ pick-chunks --help
+$ pick-chunks-cli --help
 
   Usage
     $ pick-chunks
 
   Options
     --entry  Your entry file
+    --srcContext path to src directory
 
   Examples
-    $ pick-chunks --entry=code/my-entry.js
+    $ pick-chunks-cli --entry=my-entry.js --srcContext=./example-code/
 ```
 
 ## Problem Statement

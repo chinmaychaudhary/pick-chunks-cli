@@ -1,6 +1,6 @@
 {
-	"name": "ast",
-	"version": "0.0.0",
+	"name": "pick-chunks-cli",
+	"version": "1.0.1",
 	"license": "MIT",
 	"bin": "cli.js",
 	"engines": {
@@ -9,10 +9,6 @@
 	"scripts": {
 		"test": "xo && ava"
 	},
-	"files": [
-		"cli.js",
-		"ui.js"
-	],
 	"dependencies": {
 		"@babel/parser": "^7.9.6",
 		"@babel/traverse": "^7.9.6",
