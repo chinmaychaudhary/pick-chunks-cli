@@ -7,7 +7,15 @@ const _once = require("lodash/once");
 
 const parseCache = new Map();
 
-const getFileInfoMap = _once(() => require("../file-info-data.json"));
+function requireUncached(module) {
+	delete require.cache[require.resolve(module)];
+	return require(module);
+}
+
+const getFileInfoMap = _once(() => {
+	const mp = requireUncached("../file-info-data.json");
+	return mp[process.env.entry];
+});
 
 function readFileContent(filepath) {
 	try {
@@ -20,7 +28,7 @@ function readFileContent(filepath) {
 }
 
 function parseFile(filepath, srcContext) {
-	if (process.env.postProcess === "1") {
+	if (process.env.preProcessDone === "1") {
 		const fileInfoMap = getFileInfoMap();
 		let ans = fileInfoMap[filepath];
 		if (ans) {

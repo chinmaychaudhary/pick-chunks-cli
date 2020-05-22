@@ -11,18 +11,18 @@ function transformMapToArr(mp) {
 	return [...mp.values()];
 }
 
-function getChunks(fp, context, shouldDig) {
-	return transformMapToArr(getDynamicImports(fp, context, shouldDig));
+function getChunks(fp, srcContext, shouldDig) {
+	return transformMapToArr(getDynamicImports(fp, srcContext, shouldDig));
 }
 
-const App = ({ entry, context }) => {
+const App = ({ entry, srcContext }) => {
 	const [current, setCurrent] = useState({ filepath: entry, chunkName: "" });
 	const [cursor, setCursor] = useState(0);
 	const getFileChunks = useCallback(
 		(fp, shouldDig) => {
-			return getChunks(fp, context, shouldDig);
+			return getChunks(fp, srcContext, shouldDig);
 		},
-		[context]
+		[srcContext]
 	);
 	const dynamicImports = useMemo(() => getFileChunks(current.filepath), [
 		current.filepath,

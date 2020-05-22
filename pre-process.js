@@ -13,14 +13,14 @@ function work({ entry, srcContext }) {
 	const mp = getParseCache();
 	const obj = {};
 
-	console.log("making pojo");
+	console.log("writing to a file...");
 	for (let pc of mp) {
 		obj[pc[0]] = pc[1];
 	}
 
 	fs.writeFileSync(
 		path.resolve(__dirname, "file-info-data.json"),
-		JSON.stringify(obj)
+		JSON.stringify({[entry]: obj})
 	);
 }
 
