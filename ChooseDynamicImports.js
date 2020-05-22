@@ -35,6 +35,10 @@ const App = ({ entry, srcContext }) => {
 
 	useInput((input, key) => {
 		if (input === "q") {
+			console.log("\n\n\n");
+			console.log("Copy this:\n\n\n");
+			console.log([...selectedChunks].join(","));
+			console.log("\n\n\n");
 			exit();
 		}
 
@@ -105,6 +109,7 @@ const App = ({ entry, srcContext }) => {
 						"Press `d` to drop the entire tree",
 						"Press `enter` to dig in",
 						"Press <- to go back",
+						"Press `q` to exit",
 					].join("\n")}
 				</Text>
 			</Box>
@@ -140,7 +145,6 @@ App.propTypes = {
 	context: PropTypes.string,
 };
 
-App.defaultProps = {
-};
+App.defaultProps = {};
 
 module.exports = App;

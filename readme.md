@@ -21,6 +21,7 @@ $ pick-chunks-cli --help
   Options
     --entry  Your entry file
     --srcContext path to src directory
+    --force force compute dependency graph again
 
   Examples
     $ pick-chunks-cli --entry=my-entry.js --srcContext=./example-code/

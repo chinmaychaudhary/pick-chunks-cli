@@ -12,6 +12,7 @@ const cli = meow(`
 	Options
 		--entry  path to entry file
 		--srcContext path to src directory
+		--force force compute dependency graph again
 
 	Examples
 	  $ pick-chunks --entry=path/to/my/entry/file.js --srcContext=path/to/src/dir/
@@ -21,7 +22,7 @@ process.env.entry = entry;
 
 try {
 	const fileInfoMap = require("./file-info-data.json");
-	if (!fileInfoMap[entry]) {
+	if (!fileInfoMap[entry] || cli.flags.force) {
 		throw "lol";
 	}
 } catch (e) {
