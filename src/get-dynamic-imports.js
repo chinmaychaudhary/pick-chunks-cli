@@ -14,7 +14,7 @@ function requireUncached(module) {
 
 const getFileInfoMap = _once(() => {
 	const mp = requireUncached("../file-info-data.json");
-	return mp[process.env.entry];
+	return mp[process.env.srcEntry];
 });
 
 function readFileContent(filepath) {

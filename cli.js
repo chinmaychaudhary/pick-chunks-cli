@@ -7,18 +7,19 @@ const meow = require("meow");
 
 const cli = meow(`
 	Usage
-	  $ pick-chunks
+	  $ pick-chunks-cli
 
 	Options
-		--entry  path to entry file
+		--srcEntry  path to entry file
 		--srcContext path to src directory
+		--pickEntry path to the file from which you want to start picking
 		--force force compute dependency graph again
 
 	Examples
-	  $ pick-chunks --entry=path/to/my/entry/file.js --srcContext=path/to/src/dir/
+	  $ pick-chunks-cli --srcEntry=path/to/my/entry/file.js --srcContext=path/to/src/dir/
 `);
-const entry = cli.flags.entry;
-process.env.entry = entry;
+const entry = cli.flags.srcEntry;
+process.env.srcEntry = entry;
 
 try {
 	const fileInfoMap = require("./file-info-data.json");
@@ -35,4 +36,9 @@ try {
 
 process.env.preProcessDone = "1";
 const ui = importJsx("./ChooseDynamicImports");
-render(React.createElement(ui, cli.flags));
+render(
+	React.createElement(ui, {
+		...cli.flags,
+		entry: cli.flags.pickEntry || cli.flags.srcEntry,
+	})
+);

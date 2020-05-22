@@ -35,10 +35,12 @@ const App = ({ entry, srcContext }) => {
 
 	useInput((input, key) => {
 		if (input === "q") {
-			console.log("\n\n\n");
-			console.log("Copy this:\n\n\n");
-			console.log([...selectedChunks].join(","));
-			console.log("\n\n\n");
+			if (selectedChunks.size) {
+				console.log("\n\n\n");
+				console.log("Copy this:\n\n\n");
+				console.log([...selectedChunks].join(","));
+				console.log("\n\n\n");
+			}
 			exit();
 		}
 
@@ -126,6 +128,11 @@ const App = ({ entry, srcContext }) => {
 						</Text>
 					);
 				})}
+				{!dynamicImports.length && (
+					<Text>
+						<Color yellowBright>No chunks found!</Color>
+					</Text>
+				)}
 			</Box>
 
 			{!!selectedChunks.size && (
