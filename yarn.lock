@@ -2287,6 +2287,11 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
+fuzzy-search@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/fuzzy-search/-/fuzzy-search-3.2.1.tgz#65d5faad6bc633aee86f1898b7788dfe312ac6c9"
+  integrity sha512-vAcPiyomt1ioKAsAL2uxSABHJ4Ju/e4UeDM+g1OlR0vV4YhLGMNsdLNvZTpEDY4JCSt0E4hASCNM5t2ETtsbyg==
+
 gensync@^1.0.0-beta.1:
   version "1.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.1.tgz#58f4361ff987e5ff6e1e7a210827aa371eaac269"
@@ -2663,6 +2668,14 @@ ink-testing-library@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/ink-testing-library/-/ink-testing-library-1.0.3.tgz#4afddc0ff2c39d810ce24ea2d034ef64aec9a39e"
   integrity sha512-FKq3urZvJ5aWqhXaf7OeHkXw7LsZu/m0H4an0RlUim3Ar97W1bbRUPY4K/C57/0YkFAOa6RtIbZ/EDiMJSYxXQ==
+
+ink-text-input@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/ink-text-input/-/ink-text-input-3.2.2.tgz#1b61239d3307bc3fdd47917baa4d2cdd661b45da"
+  integrity sha512-h4EEJYOO88uK16U1mhgmJBMYeEy8ZmkrdV6gybyluCbAOQtAyND/WuRQVIKhe7D2dtYd2wwYTC648nuAxwltPQ==
+  dependencies:
+    chalk "^3.0.0"
+    prop-types "^15.5.10"
 
 ink@^2.7.1:
   version "2.7.1"
@@ -4154,7 +4167,7 @@ progress@^2.0.0:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==

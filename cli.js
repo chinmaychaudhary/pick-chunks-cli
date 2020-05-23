@@ -18,6 +18,17 @@ const cli = meow(`
 	Examples
 	  $ pick-chunks-cli --srcEntry=path/to/my/entry/file.js --srcContext=path/to/src/dir/
 `);
+
+/*
+if (!cli.flags.srcEntry) {
+	cli.flags.srcEntry = "my-entry.js";
+}
+
+if (!cli.flags.srcContext) {
+	cli.flags.srcContext = "./example-code/";
+}
+*/
+
 const entry = cli.flags.srcEntry;
 process.env.srcEntry = entry;
 
