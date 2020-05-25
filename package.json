@@ -1,6 +1,6 @@
 {
 	"name": "pick-chunks-cli",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"license": "MIT",
 	"bin": "cli.js",
 	"engines": {
@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@babel/parser": "^7.9.6",
 		"@babel/traverse": "^7.9.6",
+		"clipboardy": "^2.3.0",
 		"fuzzy-search": "^3.2.1",
 		"import-jsx": "^4.0.0",
 		"ink": "^2.7.1",

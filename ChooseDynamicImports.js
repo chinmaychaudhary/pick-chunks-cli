@@ -122,9 +122,12 @@ const App = ({ entry, srcContext }) => {
 
 		if (input === "q") {
 			if (selectedChunks.size) {
+				const clipboardy = require('clipboardy');
+				const csv = [...selectedChunks].join(",");
+				clipboardy.writeSync(csv);
 				console.log("\n\n\n");
-				console.log("Copy this:\n\n\n");
-				console.log([...selectedChunks].join(","));
+				console.log("Copied this:\n\n\n");
+				console.log(csv);
 				console.log("\n\n\n");
 			}
 			exit();
