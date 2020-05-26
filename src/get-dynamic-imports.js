@@ -38,7 +38,7 @@ function parseFile(filepath, srcContext) {
 		ans = fileInfoMap[adpFp];
 		fileInfoMap[filepath] = ans;
 		if (!ans) {
-			console.log("missing", adpFp);
+			console.log("missing", adpFp, filepath);
 		}
 		return ans;
 	}
@@ -93,6 +93,22 @@ function parseFile(filepath, srcContext) {
 				}
 				if (cName) {
 					dynamicImports.set(cName, { filepath: fp, chunkName: cName });
+				}
+			}
+		},
+		ExportNamedDeclaration(astPath) {
+			const exportNode = astPath.node;
+			if (exportNode.source != null) {
+				const p = exportNode.source.value;
+				if (!isJsFile(p)) {
+					return;
+				}
+				const fp = getFilePath(dir, srcContext, p);
+				if (fp) {
+					if (typeof fp !== "string") {
+						debugger;
+					}
+					staticImports.push(fp);
 				}
 			}
 		},
