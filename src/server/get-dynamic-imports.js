@@ -28,7 +28,7 @@ function readFileContent(filepath) {
 }
 
 function parseFile(filepath, srcContext) {
-	if (process.env.shouldGenerateGraph === "1") {
+	if (process.env.shouldGenerateGraph === "0") {
 		const fileInfoMap = getFileInfoMap();
 		let ans = fileInfoMap[filepath];
 		if (ans) {

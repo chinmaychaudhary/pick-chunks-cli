@@ -6,7 +6,7 @@ const path = require("path");
 const {
 	getDynamicImports,
 	getParseCache,
-} = require("./src/get-dynamic-imports");
+} = require("./get-dynamic-imports");
 
 function work({ entry, srcContext }) {
 	getDynamicImports(entry, srcContext, true);

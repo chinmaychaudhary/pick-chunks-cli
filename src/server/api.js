@@ -21,6 +21,11 @@ function generateGraph() {
 	}
 }
 
+function initialiseGraph(req, res){
+	generateGraph();
+	res.send();
+}
+
 function getChildrenChunks(req, res) {
 	generateGraph();
 	const chunks = getChunks(req.query.fp);
@@ -53,6 +58,8 @@ function searchFiles(req, res) {
 	const searcher = new FuzzySearch(getFilenames(), undefined, { sort: true });
 	res.send(JSON.stringify(searcher.search(req.query.keyword).slice(0, 20)));
 }
+
+router.get('/init-graph', initialiseGraph);
 
 router.get("/children-chunks", getChildrenChunks);
 
