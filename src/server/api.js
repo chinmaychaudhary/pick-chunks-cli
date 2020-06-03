@@ -21,7 +21,7 @@ function generateGraph() {
 	}
 }
 
-function initialiseGraph(req, res){
+function initialiseGraph(req, res) {
 	generateGraph();
 	res.send();
 }
@@ -49,17 +49,18 @@ function requireUncached(module) {
 const getFilenames = _once(() => {
 	const mp = requireUncached("../../file-info-data.json");
 	const srcContext = path.resolve(process.cwd(), process.env.srcContext);
-	return Object.keys(mp[process.env.srcEntry]).map((filename) =>
-		filename.replace(srcContext, "")
-	);
+	return Object.keys(mp[process.env.srcEntry]).map((filename) => ({
+		filepath: filename,
+		name: filename.replace(srcContext, ""),
+	}));
 });
 
 function searchFiles(req, res) {
-	const searcher = new FuzzySearch(getFilenames(), undefined, { sort: true });
+	const searcher = new FuzzySearch(getFilenames(), ['name'], { sort: true });
 	res.send(JSON.stringify(searcher.search(req.query.keyword).slice(0, 20)));
 }
 
-router.get('/init-graph', initialiseGraph);
+router.get("/init-graph", initialiseGraph);
 
 router.get("/children-chunks", getChildrenChunks);
 

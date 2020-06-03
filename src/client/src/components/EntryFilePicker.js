@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import useLocalStorage from "react-use/lib/useLocalStorage";
 
 import { useFileSearchQuery } from "../hooks/api/useFileSearchQuery";
 
@@ -10,9 +9,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 const EMPTY_ARRAY = [];
 
-export function EntryFilePicker() {
-	const [entryFile, setEntryFile] = useLocalStorage("pick-entry", "");
-	const [searchKeyword, setSearchKeyword] = useState(entryFile || "");
+export function EntryFilePicker({ entryFile, onEntryFileChange }) {
+	const [searchKeyword, setSearchKeyword] = useState(entryFile?.name || "");
 	const { data, status } = useFileSearchQuery(searchKeyword);
 	const [open, setOpen] = React.useState(false);
 	const loading = status === "loading";
@@ -27,7 +25,7 @@ export function EntryFilePicker() {
 				style={{ width: "100%" }}
 				value={entryFile}
 				onChange={(event, newValue) => {
-					setEntryFile(newValue);
+					onEntryFileChange(newValue);
 				}}
 				open={open}
 				onOpen={() => {
@@ -40,7 +38,7 @@ export function EntryFilePicker() {
 				onInputChange={(event, newInputValue) => {
 					setSearchKeyword(newInputValue);
 				}}
-				getOptionLabel={(option) => option}
+				getOptionLabel={(option) => option.name}
 				options={data || EMPTY_ARRAY}
 				loading={loading}
 				renderInput={(params) => (

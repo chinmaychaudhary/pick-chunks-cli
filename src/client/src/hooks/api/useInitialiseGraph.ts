@@ -1,4 +1,3 @@
-import { useQuery } from "../core/useQuery";
 import { useEffect, useState } from "react";
 
 const useInitialiseGraph = () => {
