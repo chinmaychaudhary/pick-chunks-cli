@@ -13,7 +13,7 @@ function requireUncached(module) {
 }
 
 const getFileInfoMap = _once(() => {
-	const mp = requireUncached("../file-info-data.json");
+	const mp = requireUncached("../../file-info-data.json");
 	return mp[process.env.srcEntry];
 });
 
@@ -28,7 +28,7 @@ function readFileContent(filepath) {
 }
 
 function parseFile(filepath, srcContext) {
-	if (process.env.preProcessDone === "1") {
+	if (process.env.shouldGenerateGraph === "1") {
 		const fileInfoMap = getFileInfoMap();
 		let ans = fileInfoMap[filepath];
 		if (ans) {

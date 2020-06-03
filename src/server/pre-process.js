@@ -19,7 +19,7 @@ function work({ entry, srcContext }) {
 	}
 
 	fs.writeFileSync(
-		path.resolve(__dirname, "file-info-data.json"),
+		path.resolve(__dirname, "../file-info-data.json"),
 		JSON.stringify({[entry]: obj})
 	);
 }
