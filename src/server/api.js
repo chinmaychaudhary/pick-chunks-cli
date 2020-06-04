@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const path = require("path");
 const { getDynamicImports } = require("./get-dynamic-imports");
+const { performance } = require("perf_hooks");
 
 function transformMapToArr(mp) {
 	return [...mp.values()];
@@ -15,6 +16,7 @@ function getChunks(fp, shouldDig) {
 
 function generateGraph() {
 	if (process.env.shouldGenerateGraph === "1") {
+		console.log("generating graph....");
 		const work = require("./pre-process");
 		work({ entry: process.env.srcEntry, srcContext: process.env.srcContext });
 		process.env.shouldGenerateGraph = "0";
@@ -23,7 +25,7 @@ function generateGraph() {
 
 function initialiseGraph(req, res) {
 	generateGraph();
-	res.send();
+	res.sendStatus(204);
 }
 
 function getChildrenChunks(req, res) {
@@ -56,7 +58,7 @@ const getFilenames = _once(() => {
 });
 
 function searchFiles(req, res) {
-	const searcher = new FuzzySearch(getFilenames(), ['name'], { sort: true });
+	const searcher = new FuzzySearch(getFilenames(), ["name"], { sort: true });
 	res.send(JSON.stringify(searcher.search(req.query.keyword).slice(0, 20)));
 }
 

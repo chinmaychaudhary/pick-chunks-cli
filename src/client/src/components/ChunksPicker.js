@@ -18,7 +18,9 @@ import { useChildrenChunksQuery } from "../hooks/api/useChildrenChunksQuery";
 import { useAllDescendantChunksQuery } from "../hooks/api/useAllDescendantsChunksQuery";
 
 const useStyles = makeStyles((theme) => ({
-	rootContainer: {},
+	rootContainer: {
+		cursor: (props) => (props.disabled ? "not-allowed" : "default"),
+	},
 	container: {
 		pointerEvents: (props) => (props.disabled ? "none" : "all"),
 	},

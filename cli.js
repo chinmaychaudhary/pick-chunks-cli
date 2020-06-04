@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 "use strict";
-const React = require("react");
-const importJsx = require("import-jsx");
-const { render } = require("ink");
 const meow = require("meow");
 
 const cli = meow(`
@@ -19,10 +16,16 @@ const cli = meow(`
 	  $ pick-chunks-cli --srcEntry=path/to/my/entry/file.js --srcContext=path/to/src/dir/
 `);
 
+/*
+const cli = {
+	flags: { srcEntry: "space-app/client/index.js", srcContext: "./src/" },
+};
+*/
 const entry = cli.flags.srcEntry;
 process.env.srcEntry = entry;
 process.env.pickEntry = cli.flags.pickEntry || cli.flags.srcEntry;
 process.env.srcContext = cli.flags.srcContext;
+process.env.shouldGenerateGraph = "0";
 
 try {
 	const fileInfoMap = require("./file-info-data.json");
@@ -30,7 +33,7 @@ try {
 		throw "lol";
 	}
 } catch (e) {
-	process.env.shouldGenerateGraph = '1';
+	process.env.shouldGenerateGraph = "1";
 }
 
-require('./src/server');
+require("./src/server");
