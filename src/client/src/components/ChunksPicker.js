@@ -14,6 +14,8 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 
+import Chip from "@material-ui/core/Chip";
+
 import { useChildrenChunksQuery } from "../hooks/api/useChildrenChunksQuery";
 import { useAllDescendantChunksQuery } from "../hooks/api/useAllDescendantsChunksQuery";
 
@@ -24,8 +26,17 @@ const useStyles = makeStyles((theme) => ({
 	container: {
 		pointerEvents: (props) => (props.disabled ? "none" : "all"),
 	},
+	output: {
+		display: "flex",
+	},
 	listRoot: {
 		backgroundColor: theme.palette.background.paper,
+		flex: "0 0 auto",
+	},
+	selectedChunks: {
+		"& > *": {
+			margin: theme.spacing(0.5),
+		},
 	},
 }));
 
@@ -108,6 +119,15 @@ const ChunksPicker = ({ entryFile }) => {
 		setCrumbs((prevCrumbs) => prevCrumbs.concat({ filepath, chunkName }));
 	}, []);
 
+	const handleChunkDelete = useCallback((e) => {
+		const chunkName = e.currentTarget.closest('div[role="button"]').dataset
+			.chunkName;
+		setSelectedChunks((prevChunks) => {
+			prevChunks.delete(chunkName);
+			return new Set([...prevChunks]);
+		});
+	}, []);
+
 	useEffect(() => {
 		setCrumbs([{ filepath: entryFile.filepath, chunkName: "entry" }]);
 		setSelectedChunks(new Set());
@@ -142,36 +162,63 @@ const ChunksPicker = ({ entryFile }) => {
 					value={keyword}
 					onChange={(e) => setKeyword(e.target.value)}
 				/>
-				<List dense className={classes.listRoot}>
-					{filteredChunks?.map(({ filepath, chunkName }) => {
-						return (
-							<ListItem
-								key={filepath}
-								button
-								data-chunk-name={chunkName}
-								data-filepath={filepath}
-								onClick={handleChunkEnter}
-								disabled={processing}
-							>
-								<ListItemText id={chunkName} primary={chunkName} />
-								<ListItemSecondaryAction>
-									<Checkbox
-										edge="end"
-										inputProps={{
-											"aria-labelledby": chunkName,
-											"data-checked": selectedChunks.has(chunkName) ? "1" : "0",
-											"data-chunk-name": chunkName,
-											"data-filepath": filepath,
-										}}
-										onChange={handleChunkToggle}
-										checked={selectedChunks.has(chunkName)}
-										disabled={processing}
-									/>
-								</ListItemSecondaryAction>
-							</ListItem>
-						);
-					})}
-				</List>
+				<Box display="flex">
+					<List dense className={classes.listRoot}>
+						{filteredChunks?.map(({ filepath, chunkName }) => {
+							return (
+								<ListItem
+									key={filepath}
+									button
+									data-chunk-name={chunkName}
+									data-filepath={filepath}
+									onClick={handleChunkEnter}
+									disabled={processing}
+								>
+									<ListItemText id={chunkName} primary={chunkName} />
+									<ListItemSecondaryAction>
+										<Checkbox
+											edge="end"
+											inputProps={{
+												"aria-labelledby": chunkName,
+												"data-checked": selectedChunks.has(chunkName)
+													? "1"
+													: "0",
+												"data-chunk-name": chunkName,
+												"data-filepath": filepath,
+											}}
+											onChange={handleChunkToggle}
+											checked={selectedChunks.has(chunkName)}
+											disabled={processing}
+										/>
+									</ListItemSecondaryAction>
+								</ListItem>
+							);
+						})}
+					</List>
+					<Box
+						className={classes.selectedChunks}
+						justifyContent="center"
+						flexWrap="wrap"
+						flex="1"
+						borderRadius="borderRadius"
+						// bgcolor="background.paper"
+						borderColor="text.primary"
+						border={1}
+						mx={2}
+						p={4}
+					>
+						{[...selectedChunks].map((chunk) => (
+							<Chip
+								key={chunk}
+								label={chunk}
+								onDelete={handleChunkDelete}
+								variant="outlined"
+								data-chunk-name={chunk}
+								data-chip="1"
+							/>
+						))}
+					</Box>
+				</Box>
 			</Box>
 		</Box>
 	);

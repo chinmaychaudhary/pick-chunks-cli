@@ -44,7 +44,7 @@ export function EntryFilePicker({ entryFile, onEntryFileChange }) {
 				renderInput={(params) => (
 					<TextField
 						{...params}
-						label="Search file"
+						label="Search files"
 						variant="outlined"
 						InputProps={{
 							...params.InputProps,
