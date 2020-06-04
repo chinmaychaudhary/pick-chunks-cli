@@ -5,12 +5,7 @@ function queryFn(url, method, payload) {
 		method,
 		//@ts-ignore
 		body: payload ? JSON.stringify(payload) : null,
-	})
-		.then((r) => r.json())
-		.then((res) => {
-			console.log(res);
-			return res;
-		});
+	}).then((r) => r.json());
 }
 
 const EMPTY_OBJ = {};

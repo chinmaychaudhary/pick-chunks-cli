@@ -30,8 +30,9 @@ const useStyles = makeStyles((theme) => ({
 		display: "flex",
 	},
 	listRoot: {
+		height: "fit-content",
 		backgroundColor: theme.palette.background.paper,
-		flex: "0 0 auto",
+		flex: "0 0 25%",
 	},
 	selectedChunks: {
 		"& > *": {
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const ChunksPicker = ({ entryFile }) => {
+const ChunksPicker = ({ entryFile, className }) => {
 	const classes = useStyles();
 
 	const loadAllDescendantChunks = useAllDescendantChunksQuery();
@@ -130,93 +131,120 @@ const ChunksPicker = ({ entryFile }) => {
 
 	useEffect(() => {
 		setCrumbs([{ filepath: entryFile.filepath, chunkName: "entry" }]);
-		setSelectedChunks(new Set());
 	}, [entryFile]);
 
 	return (
-		<Box className={classes.rootContainer} disabled={processing}>
-			<Box className={classes.container} disabled={processing}>
-				<Breadcrumbs aria-label="breadcrumb">
-					{crumbs
-						.slice(0, crumbs.length - 1)
-						.map(({ filepath, chunkName }, index) => (
-							<Link
-								key={filepath}
-								color="inherit"
-								href=""
-								data-filepath={filepath}
-								data-chunk-name={chunkName}
-								onClick={handleCrumbClick}
-								data-index={index}
-							>
-								{chunkName}
-							</Link>
-						))}
-					<Typography color="textPrimary">
-						{crumbs[crumbs.length - 1].chunkName}
-					</Typography>
-				</Breadcrumbs>
-				<TextField
-					style={{ marginBottom: "20px" }}
-					label="Search Chunks"
-					value={keyword}
-					onChange={(e) => setKeyword(e.target.value)}
-				/>
-				<Box display="flex">
-					<List dense className={classes.listRoot}>
-						{filteredChunks?.map(({ filepath, chunkName }) => {
-							return (
-								<ListItem
-									key={filepath}
-									button
-									data-chunk-name={chunkName}
-									data-filepath={filepath}
-									onClick={handleChunkEnter}
-									disabled={processing}
-								>
-									<ListItemText id={chunkName} primary={chunkName} />
-									<ListItemSecondaryAction>
-										<Checkbox
-											edge="end"
-											inputProps={{
-												"aria-labelledby": chunkName,
-												"data-checked": selectedChunks.has(chunkName)
-													? "1"
-													: "0",
-												"data-chunk-name": chunkName,
-												"data-filepath": filepath,
-											}}
-											onChange={handleChunkToggle}
-											checked={selectedChunks.has(chunkName)}
-											disabled={processing}
-										/>
-									</ListItemSecondaryAction>
-								</ListItem>
-							);
-						})}
-					</List>
-					<Box
-						className={classes.selectedChunks}
-						justifyContent="center"
-						flexWrap="wrap"
-						flex="1"
-						borderRadius="borderRadius"
-						// bgcolor="background.paper"
-						borderColor="text.primary"
-						border={1}
-						mx={2}
-						p={4}
+		<Box mt={2} className={className} display="flex" flexDirection="column">
+			<Box flex="0 0 auto">
+				<Typography variant="h4" color="primary" gutterBottom>
+					Pick Chunks
+				</Typography>
+			</Box>
+			<Box
+				display="flex"
+				flex="1"
+				minHeight={0}
+				className={classes.rootContainer}
+				disabled={processing}
+			>
+				<Box
+					flex="1"
+					minHeight={0}
+					display="flex"
+					flexDirection="column"
+					className={classes.container}
+					disabled={processing}
+				>
+					<Breadcrumbs
+						aria-label="breadcrumb"
+						flex="0 0 auto"
+						style={{ marginBottom: "8px" }}
 					>
-						{[...selectedChunks].map((chunk) => (
-							<Chip
-								key={chunk}
-								label={chunk}
-								onDelete={handleChunkDelete}
-								variant="outlined"
-								data-chunk-name={chunk}
-								data-chip="1"
-							/>
-						))}
+						{crumbs
+							.slice(0, crumbs.length - 1)
+							.map(({ filepath, chunkName }, index) => (
+								<Link
+									key={filepath}
+									color="inherit"
+									href=""
+									data-filepath={filepath}
+									data-chunk-name={chunkName}
+									onClick={handleCrumbClick}
+									data-index={index}
+								>
+									{chunkName}
+								</Link>
+							))}
+						<Typography color="textPrimary">
+							{crumbs[crumbs.length - 1].chunkName}
+						</Typography>
+					</Breadcrumbs>
+					<TextField
+						flex="0 0 auto"
+						style={{ marginBottom: "20px", width: "25%" }}
+						label="Search Chunks"
+						value={keyword}
+						onChange={(e) => setKeyword(e.target.value)}
+					/>
+					<Box display="flex" flex="1" minHeight={0} overflow="auto">
+						<List dense className={classes.listRoot}>
+							{filteredChunks?.map(({ filepath, chunkName }) => {
+								return (
+									<ListItem
+										key={chunkName}
+										button
+										data-chunk-name={chunkName}
+										data-filepath={filepath}
+										onClick={handleChunkEnter}
+										disabled={processing}
+									>
+										<ListItemText id={chunkName} primary={chunkName} />
+										<ListItemSecondaryAction>
+											<Checkbox
+												edge="end"
+												inputProps={{
+													"aria-labelledby": chunkName,
+													"data-checked": selectedChunks.has(chunkName)
+														? "1"
+														: "0",
+													"data-chunk-name": chunkName,
+													"data-filepath": filepath,
+												}}
+												onChange={handleChunkToggle}
+												checked={selectedChunks.has(chunkName)}
+												disabled={processing}
+											/>
+										</ListItemSecondaryAction>
+									</ListItem>
+								);
+							})}
+						</List>
+						<Box
+							className={classes.selectedChunks}
+							justifyContent="center"
+							flexWrap="wrap"
+							flex="1"
+							borderRadius="borderRadius"
+							// bgcolor="background.paper"
+							borderColor="text.primary"
+							border={1}
+							mx={2}
+							p={4}
+							height="100%"
+							position="sticky"
+							top="0"
+						>
+							{[...selectedChunks].map((chunk) => (
+								<Chip
+									key={chunk}
+									label={chunk}
+									onDelete={handleChunkDelete}
+									variant="outlined"
+									data-chunk-name={chunk}
+									data-chip="1"
+								/>
+							))}
+						</Box>
 					</Box>
 				</Box>
 			</Box>

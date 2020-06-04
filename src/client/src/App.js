@@ -3,7 +3,8 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
-import Divider from "@material-ui/core/Divider";
+import Box from "@material-ui/core/Box";
+import { makeStyles } from "@material-ui/core/styles";
 
 import { useInitialiseGraph } from "./hooks/api/useInitialiseGraph";
 
@@ -12,14 +13,20 @@ import { ChunksPicker } from "./components/ChunksPicker";
 
 import "./App.css";
 
+const useStyles = makeStyles((theme) => ({
+	flexNone: { flex: "0 0 auto" },
+	flex1: { flex: "1", minHeight: "0" },
+}));
+
 function App() {
+	const classes = useStyles();
 	const loading = useInitialiseGraph();
 	const [entryFile, setEntryFile] = useLocalStorage("pick-entry", {
 		filepath: "",
 		name: "",
 	});
 	return (
-		<div className="App">
+		<Box padding={5} display="flex" flexDirection="column" height="100%">
 			{loading ? (
 				<Typography component="div" variant="h4">
 					<Skeleton />
@@ -27,14 +34,16 @@ function App() {
 			) : (
 				<>
 					<EntryFilePicker
+						className={classes.flexNone}
 						entryFile={entryFile}
 						onEntryFileChange={setEntryFile}
 					/>
-					<Divider style={{ margin: "80px 0" }} />
-					{entryFile.filepath && <ChunksPicker entryFile={entryFile} />}
+					{entryFile.filepath && (
+						<ChunksPicker className={classes.flex1} entryFile={entryFile} />
+					)}
 				</>
 			)}
-		</div>
+		</Box>
 	);
 }
 

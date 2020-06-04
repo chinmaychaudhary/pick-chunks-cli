@@ -6,17 +6,18 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Box from "@material-ui/core/Box";
 
 const EMPTY_ARRAY = [];
 
-export function EntryFilePicker({ entryFile, onEntryFileChange }) {
+export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
 	const [searchKeyword, setSearchKeyword] = useState(entryFile?.name || "");
 	const { data, status } = useFileSearchQuery(searchKeyword);
 	const [open, setOpen] = React.useState(false);
 	const loading = status === "loading";
 
 	return (
-		<>
+		<Box className={className}>
 			<Typography variant="h4" color="primary" gutterBottom>
 				Select Entry File
 			</Typography>
@@ -25,7 +26,7 @@ export function EntryFilePicker({ entryFile, onEntryFileChange }) {
 				style={{ width: "100%" }}
 				value={entryFile}
 				onChange={(event, newValue) => {
-					onEntryFileChange(newValue);
+					onEntryFileChange(newValue || { filepath: "", name: "" });
 				}}
 				open={open}
 				onOpen={() => {
@@ -60,6 +61,6 @@ export function EntryFilePicker({ entryFile, onEntryFileChange }) {
 					/>
 				)}
 			/>
-		</>
+		</Box>
 	);
 }
