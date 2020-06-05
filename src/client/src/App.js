@@ -38,9 +38,7 @@ function App() {
 						entryFile={entryFile}
 						onEntryFileChange={setEntryFile}
 					/>
-					{entryFile.filepath && (
-						<ChunksPicker className={classes.flex1} entryFile={entryFile} />
-					)}
+					<ChunksPicker className={classes.flex1} entryFile={entryFile} />
 				</>
 			)}
 		</Box>

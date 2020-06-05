@@ -73,182 +73,220 @@ const ChunksPicker = ({ entryFile, className }) => {
 		[fuzSearch, keyword, childrenChunks]
 	);
 
-	const handleChunkToggle = useCallback(
-		(e) => {
-			e.stopPropagation();
-			const { filepath, chunkName, checked } = e.currentTarget.dataset;
-			const metaKey = true;
-			if (metaKey) {
-				setProcessing(true);
-			}
-			const nextChunks = new Set([...selectedChunks]);
-			if (checked === "1") {
-				if (metaKey) {
-					loadAllDescendantChunks(filepath).then((descChunks) => {
-						[...descChunks, { chunkName }].forEach(({ chunkName: cName }) => {
-							nextChunks.delete(cName);
-						});
-						setSelectedChunks(nextChunks);
-						setProcessing(false);
-					});
-				} else {
-					nextChunks.delete(chunkName);
-					setSelectedChunks(nextChunks);
-					setProcessing(false);
-				}
-			} else {
-				if (metaKey) {
-					loadAllDescendantChunks(filepath).then((descChunks) => {
-						[...descChunks, { chunkName }].forEach(({ chunkName: cName }) => {
-							nextChunks.add(cName);
-						});
-						setSelectedChunks(nextChunks);
-						setProcessing(false);
-					});
-				} else {
-					nextChunks.add(chunkName);
-					setSelectedChunks(nextChunks);
-					setProcessing(false);
-				}
-			}
-		},
-		[selectedChunks]
-	);
-
 	const handleChunkEnter = useCallback((e) => {
 		const { filepath, chunkName } = e.currentTarget.dataset;
 		setCrumbs((prevCrumbs) => prevCrumbs.concat({ filepath, chunkName }));
+		setKeyword("");
 	}, []);
 
 	const handleChunkDelete = useCallback((e) => {
-		const chunkName = e.currentTarget.closest('div[role="button"]').dataset
-			.chunkName;
+		const chunkName = e.currentTarget.closest('[data-container="chunk"]')
+			.dataset.chunkName;
 		setSelectedChunks((prevChunks) => {
 			prevChunks.delete(chunkName);
 			return new Set([...prevChunks]);
 		});
 	}, []);
 
+	const handleSingleChunkSelect = useCallback((chunkName) => {
+		setSelectedChunks((prev) => new Set([...prev, chunkName]));
+	}, []);
+
+	const handleEntireSubGraphSelect = useCallback(
+		(chunkName, filepath) => {
+			const nextChunks = new Set([...selectedChunks]);
+			setProcessing(true);
+			loadAllDescendantChunks(filepath).then((descChunks) => {
+				[...descChunks, { chunkName }].forEach(({ chunkName: cName }) => {
+					nextChunks.add(cName);
+				});
+				setSelectedChunks(nextChunks);
+				setProcessing(false);
+			});
+		},
+		[selectedChunks]
+	);
+
+	const handleSingleChunkRemove = useCallback((chunkName) => {
+		setSelectedChunks((prev) => {
+			prev.delete(chunkName);
+			return new Set([...prev]);
+		});
+	}, []);
+
+	const handleEntireSubGraphRemove = useCallback(
+		(chunkName, filepath) => {
+			const nextChunks = new Set([...selectedChunks]);
+			setProcessing(true);
+			loadAllDescendantChunks(filepath).then((descChunks) => {
+				[...descChunks, { chunkName }].forEach(({ chunkName: cName }) => {
+					nextChunks.delete(cName);
+				});
+				setSelectedChunks(nextChunks);
+				setProcessing(false);
+			});
+		},
+		[selectedChunks]
+	);
+
+	const handleItemKeyDown = useCallback((e) => {
+		const { filepath, chunkName } = e.currentTarget.dataset;
+		switch (e.key) {
+			case "s":
+				return handleSingleChunkSelect(chunkName);
+			case "x":
+				return handleSingleChunkRemove(chunkName);
+			case "p":
+				return handleEntireSubGraphSelect(chunkName, filepath);
+			case "d":
+				return handleEntireSubGraphRemove(chunkName, filepath);
+			default:
+				return undefined;
+		}
+	}, []);
+
+	const handleCheckboxToggle = useCallback((e) => {
+		const { filepath, chunkName, checked } = e.currentTarget.dataset;
+		debugger;
+		if (checked === "0") {
+			return e.metaKey
+				? handleEntireSubGraphSelect(chunkName, filepath)
+				: handleSingleChunkSelect(chunkName);
+		}
+
+		return e.metaKey
+			? handleEntireSubGraphRemove(chunkName, filepath)
+			: handleSingleChunkRemove(chunkName);
+	}, []);
+
 	useEffect(() => {
 		setCrumbs([{ filepath: entryFile.filepath, chunkName: "entry" }]);
+		setKeyword("");
 	}, [entryFile]);
 
 	return (
-		<Box mt={2} className={className} display="flex" flexDirection="column">
-			<Box flex="0 0 auto">
-				<Typography variant="h4" color="primary" gutterBottom>
-					Pick Chunks
-				</Typography>
-			</Box>
-			<Box
-				display="flex"
-				flex="1"
-				minHeight={0}
-				className={classes.rootContainer}
-				disabled={processing}
-			>
+		(!!crumbs[crumbs.length - 1]?.filepath || !!selectedChunks.size) && (
+			<Box mt={2} className={className} display="flex" flexDirection="column">
+				<Box flex="0 0 auto">
+					<Typography variant="h4" color="primary" gutterBottom>
+						Pick Chunks
+					</Typography>
+				</Box>
 				<Box
+					display="flex"
 					flex="1"
 					minHeight={0}
-					display="flex"
-					flexDirection="column"
-					className={classes.container}
+					className={classes.rootContainer}
 					disabled={processing}
 				>
-					<Breadcrumbs
-						aria-label="breadcrumb"
-						flex="0 0 auto"
-						style={{ marginBottom: "8px" }}
+					<Box
+						flex="1"
+						minHeight={0}
+						display="flex"
+						flexDirection="column"
+						className={classes.container}
+						disabled={processing}
 					>
-						{crumbs
-							.slice(0, crumbs.length - 1)
-							.map(({ filepath, chunkName }, index) => (
-								<Link
-									key={filepath}
-									color="inherit"
-									href=""
-									data-filepath={filepath}
-									data-chunk-name={chunkName}
-									onClick={handleCrumbClick}
-									data-index={index}
-								>
-									{chunkName}
-								</Link>
-							))}
-						<Typography color="textPrimary">
-							{crumbs[crumbs.length - 1].chunkName}
-						</Typography>
-					</Breadcrumbs>
-					<TextField
-						flex="0 0 auto"
-						style={{ marginBottom: "20px", width: "25%" }}
-						label="Search Chunks"
-						value={keyword}
-						onChange={(e) => setKeyword(e.target.value)}
-					/>
-					<Box display="flex" flex="1" minHeight={0} overflow="auto">
-						<List dense className={classes.listRoot}>
-							{filteredChunks?.map(({ filepath, chunkName }) => {
-								return (
-									<ListItem
-										key={chunkName}
-										button
-										data-chunk-name={chunkName}
-										data-filepath={filepath}
-										onClick={handleChunkEnter}
-										disabled={processing}
-									>
-										<ListItemText id={chunkName} primary={chunkName} />
-										<ListItemSecondaryAction>
-											<Checkbox
-												edge="end"
-												inputProps={{
-													"aria-labelledby": chunkName,
-													"data-checked": selectedChunks.has(chunkName)
-														? "1"
-														: "0",
-													"data-chunk-name": chunkName,
-													"data-filepath": filepath,
-												}}
-												onChange={handleChunkToggle}
-												checked={selectedChunks.has(chunkName)}
-												disabled={processing}
-											/>
-										</ListItemSecondaryAction>
-									</ListItem>
-								);
-							})}
-						</List>
-						<Box
-							className={classes.selectedChunks}
-							justifyContent="center"
-							flexWrap="wrap"
-							flex="1"
-							borderRadius="borderRadius"
-							// bgcolor="background.paper"
-							borderColor="text.primary"
-							border={1}
-							mx={2}
-							p={4}
-							height="100%"
-							position="sticky"
-							top="0"
+						<Breadcrumbs
+							aria-label="breadcrumb"
+							flex="0 0 auto"
+							style={{ marginBottom: "8px" }}
 						>
-							{[...selectedChunks].map((chunk) => (
-								<Chip
-									key={chunk}
-									label={chunk}
-									onDelete={handleChunkDelete}
-									variant="outlined"
-									data-chunk-name={chunk}
-									data-chip="1"
-								/>
-							))}
+							{crumbs
+								.slice(0, crumbs.length - 1)
+								.map(({ filepath, chunkName }, index) => (
+									<Link
+										key={filepath}
+										color="inherit"
+										href=""
+										data-filepath={filepath}
+										data-chunk-name={chunkName}
+										onClick={handleCrumbClick}
+										data-index={index}
+									>
+										{chunkName}
+									</Link>
+								))}
+							<Typography color="textPrimary">
+								{crumbs[crumbs.length - 1].chunkName}
+							</Typography>
+						</Breadcrumbs>
+						<TextField
+							flex="0 0 auto"
+							style={{ marginBottom: "20px", width: "25%" }}
+							label="Search Chunks"
+							value={keyword}
+							onChange={(e) => setKeyword(e.target.value)}
+						/>
+						<Box display="flex" flex="1" minHeight={0} overflow="auto">
+							<List dense className={classes.listRoot}>
+								{filteredChunks?.map(({ filepath, chunkName }) => {
+									return (
+										<ListItem
+											key={chunkName}
+											button
+											data-checked={selectedChunks.has(chunkName) ? "1" : "0"}
+											data-chunk-name={chunkName}
+											data-filepath={filepath}
+											onClick={handleChunkEnter}
+											disabled={processing}
+											onKeyDown={handleItemKeyDown}
+											data-container="list-item"
+										>
+											<ListItemText id={chunkName} primary={chunkName} />
+											<ListItemSecondaryAction>
+												<Checkbox
+													tabIndex={-1}
+													edge="end"
+													inputProps={{
+														"aria-labelledby": chunkName,
+														"data-checked": selectedChunks.has(chunkName)
+															? "1"
+															: "0",
+														"data-chunk-name": chunkName,
+														"data-filepath": filepath,
+														onClick: handleCheckboxToggle,
+													}}
+													checked={selectedChunks.has(chunkName)}
+												/>
+											</ListItemSecondaryAction>
+										</ListItem>
+									);
+								})}
+							</List>
+							<Box
+								className={classes.selectedChunks}
+								justifyContent="center"
+								flexWrap="wrap"
+								flex="1"
+								borderRadius="borderRadius"
+								// bgcolor="background.paper"
+								borderColor="text.primary"
+								border={1}
+								mx={2}
+								p={4}
+								height="100%"
+								position="sticky"
+								top="0"
+								overflow="auto"
+							>
+								{[...selectedChunks].map((chunk) => (
+									<Chip
+										key={chunk}
+										label={chunk}
+										onDelete={handleChunkDelete}
+										variant="outlined"
+										data-chunk-name={chunk}
+										data-chip="1"
+										data-container="chunk"
+									/>
+								))}
+							</Box>
 						</Box>
 					</Box>
 				</Box>
 			</Box>
-		</Box>
+		)
 	);
 };
 
