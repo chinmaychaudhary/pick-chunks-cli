@@ -1,6 +1,14 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+	useState,
+	useEffect,
+	useCallback,
+	useMemo,
+	useRef,
+} from "react";
 import FuzzySearch from "fuzzy-search";
 import { FixedSizeList } from "react-window";
+import { motion, AnimatePresence } from "framer-motion";
+
 import useMeasure from "react-use/lib/useMeasure";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -36,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	listRoot: {
 		backgroundColor: theme.palette.background.paper,
-		flex: "0 0 25%",
+		flex: "0 0 35%",
 		overflow: "auto",
 		minHeight: 0,
 	},
@@ -53,15 +61,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function renderRow(props) {
-	const { index, style } = props;
-
-	return (
-		<ListItem button style={style} key={index}>
-			<ListItemText primary={`Item ${index + 1}`} />
-		</ListItem>
-	);
-}
+const spring = {
+	type: "spring",
+	damping: 20,
+	stiffness: 300,
+};
 
 const ChunksPicker = ({ entryFile, className }) => {
 	const classes = useStyles();
@@ -95,6 +99,13 @@ const ChunksPicker = ({ entryFile, className }) => {
 		[fuzSearch, keyword, childrenChunks]
 	);
 
+	const fcRef = useRef(filteredChunks);
+	const selectedChunksRef = useRef(selectedChunks);
+	const processingRef = useRef(processing);
+	fcRef.current = filteredChunks;
+	selectedChunksRef.current = selectedChunks;
+	processingRef.current = processing;
+
 	const handleChunkEnter = useCallback((e) => {
 		const { filepath, chunkName } = e.currentTarget.dataset;
 		setCrumbs((prevCrumbs) => prevCrumbs.concat({ filepath, chunkName }));
@@ -116,7 +127,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 
 	const handleEntireSubGraphSelect = useCallback(
 		(chunkName, filepath) => {
-			const nextChunks = new Set([...selectedChunks]);
+			const nextChunks = new Set([...selectedChunksRef.current]);
 			setProcessing(true);
 			loadAllDescendantChunks(filepath).then((descChunks) => {
 				[...descChunks, { chunkName }].forEach(({ chunkName: cName }) => {
@@ -126,7 +137,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 				setProcessing(false);
 			});
 		},
-		[selectedChunks, loadAllDescendantChunks]
+		[loadAllDescendantChunks]
 	);
 
 	const handleSingleChunkRemove = useCallback((chunkName) => {
@@ -138,7 +149,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 
 	const handleEntireSubGraphRemove = useCallback(
 		(chunkName, filepath) => {
-			const nextChunks = new Set([...selectedChunks]);
+			const nextChunks = new Set([...selectedChunksRef.current]);
 			setProcessing(true);
 			loadAllDescendantChunks(filepath).then((descChunks) => {
 				[...descChunks, { chunkName }].forEach(({ chunkName: cName }) => {
@@ -148,7 +159,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 				setProcessing(false);
 			});
 		},
-		[selectedChunks, loadAllDescendantChunks]
+		[loadAllDescendantChunks]
 	);
 
 	const handleItemKeyDown = useCallback((e) => {
@@ -157,13 +168,9 @@ const ChunksPicker = ({ entryFile, className }) => {
 
 		switch (e.key) {
 			case "s":
-				return isActive
-					? undefined
-					: handleSingleChunkSelect(chunkName);
+				return isActive ? undefined : handleSingleChunkSelect(chunkName);
 			case "x":
-				return isActive
-					? handleSingleChunkRemove(chunkName)
-					: undefined;
+				return isActive ? handleSingleChunkRemove(chunkName) : undefined;
 			case "p":
 				return handleEntireSubGraphSelect(chunkName, filepath);
 			case "d":
@@ -197,24 +204,35 @@ const ChunksPicker = ({ entryFile, className }) => {
 		]
 	);
 
-	const ListItemContainer = useCallback(
-		({ index, style }) => {
-			if (!filteredChunks[index]) {
-				return null;
-			}
-			const { chunkName, filepath } = filteredChunks[index];
-			return (
+	const handleChunkEnterRef = useRef(handleChunkEnter);
+	const handleItemKeyDownRef = useRef(handleItemKeyDown);
+	const handleCheckboxToggleRef = useRef(handleCheckboxToggle);
+	handleChunkEnterRef.current = handleChunkEnter;
+	handleItemKeyDownRef.current = handleItemKeyDown;
+	handleCheckboxToggleRef.current = handleCheckboxToggle;
+
+	const ListItemContainer = useCallback(({ index, style }) => {
+		if (!fcRef.current[index]) {
+			return null;
+		}
+		const { chunkName, filepath } = fcRef.current[index];
+		return (
+			<motion.div
+				key={chunkName}
+				animate={{ y: style.top }}
+				initial={{ y: style.top - 56 }}
+				style={{ top: 0, position: "absolute", width: "100%" }}
+				// layoutTransition={spring}
+			>
 				<ListItem
-					key={chunkName}
 					button
-					data-checked={selectedChunks.has(chunkName) ? "1" : "0"}
+					data-checked={selectedChunksRef.current.has(chunkName) ? "1" : "0"}
 					data-chunk-name={chunkName}
 					data-filepath={filepath}
-					onClick={handleChunkEnter}
-					disabled={processing}
-					onKeyDown={handleItemKeyDown}
+					onClick={handleChunkEnterRef.current}
+					disabled={processingRef.current}
+					onKeyDown={handleItemKeyDownRef.current}
 					data-container="list-item"
-					style={style}
 				>
 					<ListItemText primary={chunkName} />
 					<Checkbox
@@ -222,28 +240,27 @@ const ChunksPicker = ({ entryFile, className }) => {
 						edge="end"
 						inputProps={{
 							"aria-labelledby": chunkName,
-							"data-checked": selectedChunks.has(chunkName) ? "1" : "0",
+							"data-checked": selectedChunksRef.current.has(chunkName)
+								? "1"
+								: "0",
 							"data-chunk-name": chunkName,
 							"data-filepath": filepath,
-							onClick: handleCheckboxToggle,
+							onClick: handleCheckboxToggleRef.current,
 						}}
-						checked={selectedChunks.has(chunkName)}
+						checked={selectedChunksRef.current.has(chunkName)}
 					/>
 				</ListItem>
-			);
-		},
-		[
-			filteredChunks,
-			selectedChunks,
-			processing,
-			handleChunkEnter,
-			handleItemKeyDown,
-			handleCheckboxToggle,
-		]
-	);
+			</motion.div>
+		);
+	}, []);
 
 	const [containerRef, { height, width }] = useMeasure();
 	const [selectedContainerRef, { width: selectionBoxWidth }] = useMeasure();
+	const windowData = useMemo(() => ({}), [
+		selectedChunks,
+		processing,
+		filteredChunks,
+	]);
 
 	useEffect(() => {
 		setCrumbs([{ filepath: entryFile.filepath, chunkName: "entry" }]);
@@ -299,7 +316,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 						</Breadcrumbs>
 						<TextField
 							flex="0 0 auto"
-							style={{ marginBottom: "20px", width: "25%" }}
+							style={{ marginBottom: "20px", width: "35%" }}
 							label="Search Chunks"
 							value={keyword}
 							onChange={(e) => setKeyword(e.target.value)}
@@ -320,8 +337,9 @@ const ChunksPicker = ({ entryFile, className }) => {
 								<FixedSizeList
 									height={height}
 									width={width - selectionBoxWidth}
-									itemSize={36}
+									itemSize={58}
 									itemCount={filteredChunks?.length || 0}
+									data={windowData}
 								>
 									{ListItemContainer}
 								</FixedSizeList>
@@ -344,15 +362,21 @@ const ChunksPicker = ({ entryFile, className }) => {
 									overflow="auto"
 								>
 									{[...selectedChunks].map((chunk) => (
-										<Chip
+										<motion.div
 											key={chunk}
-											label={chunk}
-											onDelete={handleChunkDelete}
-											variant="outlined"
-											data-chunk-name={chunk}
-											data-chip="1"
-											data-container="chunk"
-										/>
+											style={{ display: "inline-block" }}
+											animate={{ scale: 1 }}
+											initial={{ scale: 0.5 }}
+										>
+											<Chip
+												label={chunk}
+												onDelete={handleChunkDelete}
+												variant="outlined"
+												data-chunk-name={chunk}
+												data-chip="1"
+												data-container="chunk"
+											/>
+										</motion.div>
 									))}
 								</Box>
 							</Box>
