@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import FuzzySearch from "fuzzy-search";
 import { FixedSizeList } from "react-window";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 import useMeasure from "react-use/lib/useMeasure";
 
@@ -19,9 +19,7 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 
-import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 
@@ -29,8 +27,6 @@ import Chip from "@material-ui/core/Chip";
 
 import { useChildrenChunksQuery } from "../hooks/api/useChildrenChunksQuery";
 import { useAllDescendantChunksQuery } from "../hooks/api/useAllDescendantsChunksQuery";
-
-const EMPTY_ARRAY = [];
 
 const useStyles = makeStyles((theme) => ({
 	rootContainer: {
@@ -56,12 +52,6 @@ const useStyles = makeStyles((theme) => ({
 	chipRoot: theme.typography.subtitle1,
 }));
 
-const spring = {
-	type: "spring",
-	damping: 20,
-	stiffness: 300,
-};
-
 const ChunksPicker = ({ entryFile, className }) => {
 	const classes = useStyles();
 
@@ -76,7 +66,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 		setCrumbs((prevCrumbs) => [...prevCrumbs.slice(0, index + 1)]);
 	}, []);
 
-	const { data: childrenChunks, status } = useChildrenChunksQuery(
+	const { data: childrenChunks } = useChildrenChunksQuery(
 		crumbs[crumbs.length - 1].filepath
 	);
 
