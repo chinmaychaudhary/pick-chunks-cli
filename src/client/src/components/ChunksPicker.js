@@ -53,12 +53,7 @@ const useStyles = makeStyles((theme) => ({
 			margin: theme.spacing(0.5),
 		},
 	},
-	demoRoot: {
-		width: "100%",
-		height: 400,
-		maxWidth: 300,
-		backgroundColor: theme.palette.background.paper,
-	},
+	chipRoot: theme.typography.subtitle1,
 }));
 
 const spring = {
@@ -370,6 +365,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 										>
 											<Chip
 												label={chunk}
+												classes={{ root: classes.chipRoot }}
 												onDelete={handleChunkDelete}
 												variant="outlined"
 												data-chunk-name={chunk}
