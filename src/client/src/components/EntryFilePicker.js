@@ -40,6 +40,7 @@ export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
 					setSearchKeyword(newInputValue);
 				}}
 				getOptionLabel={(option) => option.name}
+				getOptionSelected={(option, value) => option.name === value.name}
 				options={data || EMPTY_ARRAY}
 				loading={loading}
 				renderInput={(params) => (
