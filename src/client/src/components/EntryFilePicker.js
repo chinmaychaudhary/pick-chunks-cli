@@ -10,6 +10,35 @@ import Box from "@material-ui/core/Box";
 
 const EMPTY_ARRAY = [];
 
+function getUniqueMatches(matches) {
+	return [...new Set(matches.map(([a, b]) => `${a}-${b}`))].map((v) =>
+		v.split("-").map(Number)
+	);
+}
+
+function getSegments(option) {
+	const { name } = option;
+	const matches = getUniqueMatches(option.matches[0].indices);
+
+	const list = [
+		{ value: name.substring(0, matches?.[0]?.[0]), isHiglight: false },
+	];
+
+	for (let i = 0; i < matches.length; i++) {
+		const mat = matches[i];
+		if (i > 0 && mat[0] < matches[i - 1][0]) {
+			break;
+		}
+		list.push({ value: name.substring(mat[0], mat[1]), isHiglight: true });
+		list.push({
+			value: name.substring(mat[1], matches[i + 1]?.[0]),
+			isHiglight: false,
+		});
+	}
+
+	return list;
+}
+
 export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
 	const [searchKeyword, setSearchKeyword] = useState(entryFile?.name || "");
 	const { data, status } = useFileSearchQuery(searchKeyword);
@@ -61,6 +90,27 @@ export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
 						}}
 					/>
 				)}
+				// renderOption={(option) => {
+				// 	return (
+				// 		<Typography key={option.name}>{option.name}</Typography>
+				// 	)
+				// 	console.log(option);
+				// 	const segments = getSegments(option);
+				// 	console.log(option);
+				// 	return (
+				// 		<Typography key={option.name}>
+				// 			{segments.map((segment, index) =>
+				// 				segment.isHiglight ? (
+				// 					<Typography display="inline" key={index} color="primary">
+				// 						{segment.value}
+				// 					</Typography>
+				// 				) : (
+				// 					<span>{segment.value}</span>
+				// 				)
+				// 			)}
+				// 		</Typography>
+				// 	);
+				// }}
 			/>
 		</Box>
 	);

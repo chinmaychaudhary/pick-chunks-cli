@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const path = require("path");
 const { getDynamicImports } = require("./get-dynamic-imports");
-const { performance } = require("perf_hooks");
+const Fuse = require("fuse.js");
 
 function transformMapToArr(mp) {
 	return [...mp.values()];
@@ -41,25 +41,37 @@ function getAllDescendantChunks(req, res) {
 }
 
 const _once = require("lodash/once");
-const FuzzySearch = require("fuzzy-search");
 
 function requireUncached(module) {
 	delete require.cache[require.resolve(module)];
 	return require(module);
 }
 
-const getFilenames = _once(() => {
+const getSearcher = _once(() => {
 	const mp = requireUncached("../../file-info-data.json");
 	const srcContext = path.resolve(process.cwd(), process.env.srcContext);
-	return Object.keys(mp[process.env.srcEntry]).map((filename) => ({
+	const list = Object.keys(mp[process.env.srcEntry]).map((filename) => ({
 		filepath: filename,
 		name: filename.replace(srcContext, ""),
 	}));
+	const options = {
+		keys: ["name"],
+		includeMatches: true,
+	};
+	const myIndex = Fuse.createIndex(options.keys, list);
+	return new Fuse(list, options, myIndex);
 });
 
 function searchFiles(req, res) {
-	const searcher = new FuzzySearch(getFilenames(), ["name"], { sort: true });
-	res.send(JSON.stringify(searcher.search(req.query.keyword).slice(0, 20)));
+	const searcher = getSearcher();
+	res.send(
+		JSON.stringify(
+			searcher
+				.search(req.query.keyword)
+				.slice(0, 20)
+				.map(({ item, matches }) => ({ ...item, matches }))
+		)
+	);
 }
 
 router.get("/init-graph", initialiseGraph);
