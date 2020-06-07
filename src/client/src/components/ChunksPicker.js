@@ -159,25 +159,33 @@ const ChunksPicker = ({ entryFile, className }) => {
 		[loadAllDescendantChunks]
 	);
 
-	const handleItemKeyDown = useCallback((e) => {
-		const { filepath, chunkName, checked } = e.currentTarget.dataset;
-		const isActive = checked === "1";
+	const handleItemKeyDown = useCallback(
+		(e) => {
+			const { filepath, chunkName, checked } = e.currentTarget.dataset;
+			const isActive = checked === "1";
 
-		switch (e.key) {
-			case "s":
-				return isActive ? undefined : handleSingleChunkSelect(chunkName);
-			case "x":
-				return isActive ? handleSingleChunkRemove(chunkName) : undefined;
-			case "p":
-				return handleEntireSubGraphSelect(chunkName, filepath);
-			case "d":
-				return isActive
-					? handleEntireSubGraphRemove(chunkName, filepath)
-					: undefined;
-			default:
-				return undefined;
-		}
-	}, []);
+			switch (e.key) {
+				case "s":
+					return isActive ? undefined : handleSingleChunkSelect(chunkName);
+				case "x":
+					return isActive ? handleSingleChunkRemove(chunkName) : undefined;
+				case "p":
+					return handleEntireSubGraphSelect(chunkName, filepath);
+				case "d":
+					return isActive
+						? handleEntireSubGraphRemove(chunkName, filepath)
+						: undefined;
+				default:
+					return undefined;
+			}
+		},
+		[
+			handleSingleChunkSelect,
+			handleSingleChunkRemove,
+			handleEntireSubGraphSelect,
+			handleEntireSubGraphRemove,
+		]
+	);
 
 	const handleCheckboxToggle = useCallback(
 		(e) => {
@@ -206,7 +214,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 	}, [setSelectedChunks]);
 
 	const [shouldShowSnackbar, setSnackbarVisibility] = useState(false);
-	const hideSnackbar = useCallback(() => setSnackbarVisibility(false));
+	const hideSnackbar = useCallback(() => setSnackbarVisibility(false), []);
 	const handleCopy = useCallback(() => {
 		//eslint-disable-next-line
 		navigator.clipboard
