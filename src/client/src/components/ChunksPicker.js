@@ -348,6 +348,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 									<FileCopyOutlinedIcon />
 								</IconButton>
 								<IconButton
+									disabled={!selectedChunks.size}
 									onClick={handleDeselectAll}
 									aria-label="deselect all"
 								>
