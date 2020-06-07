@@ -7,6 +7,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
+import { makeStyles } from "@material-ui/core/styles";
 
 const EMPTY_ARRAY = [];
 
@@ -39,16 +40,29 @@ function getSegments(option) {
 	return list;
 }
 
+const useStyles = makeStyles((theme) => ({
+	title: {
+		flex: "0 0 auto",
+		marginRight: theme.spacing(3),
+		marginBottom: '-6px'
+	},
+}));
+
 export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
+	const classes = useStyles();
 	const [searchKeyword, setSearchKeyword] = useState(entryFile?.name || "");
 	const { data, status } = useFileSearchQuery(searchKeyword);
 	const [open, setOpen] = React.useState(false);
 	const loading = status === "loading";
 
 	return (
-		<Box className={className}>
-			<Typography variant="h4" color="primary" gutterBottom>
-				Select Entry File
+		<Box className={className} display="flex" alignItems="flex-end" mb={2}>
+			<Typography
+				variant="h4"
+				color="primary"
+				className={classes.title}
+			>
+				Entry
 			</Typography>
 			<Autocomplete
 				id="asynchronous-demo"
@@ -76,7 +90,6 @@ export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
 					<TextField
 						{...params}
 						label="Search files"
-						variant="outlined"
 						InputProps={{
 							...params.InputProps,
 							endAdornment: (

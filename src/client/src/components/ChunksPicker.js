@@ -22,6 +22,14 @@ import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import IconButton from "@material-ui/core/IconButton";
+
+import Snackbar from "@material-ui/core/Snackbar";
+import Slide from "@material-ui/core/Slide";
+
+import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 
 import Chip from "@material-ui/core/Chip";
 
@@ -51,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
 	},
 	chipRoot: theme.typography.subtitle1,
 }));
+
+function SlideTransition(props) {
+	return <Slide {...props} direction="left" />;
+}
 
 const ChunksPicker = ({ entryFile, className }) => {
 	const classes = useStyles();
@@ -189,6 +201,19 @@ const ChunksPicker = ({ entryFile, className }) => {
 		]
 	);
 
+	const handleDeselectAll = useCallback(() => {
+		setSelectedChunks(new Set());
+	}, [setSelectedChunks]);
+
+	const [shouldShowSnackbar, setSnackbarVisibility] = useState(false);
+	const hideSnackbar = useCallback(() => setSnackbarVisibility(false));
+	const handleCopy = useCallback(() => {
+		//eslint-disable-next-line
+		navigator.clipboard
+			?.writeText([...selectedChunks].join())
+			.then(() => setSnackbarVisibility(true));
+	}, [selectedChunks]);
+
 	const handleChunkEnterRef = useRef(handleChunkEnter);
 	const handleItemKeyDownRef = useRef(handleItemKeyDown);
 	const handleCheckboxToggleRef = useRef(handleCheckboxToggle);
@@ -219,10 +244,9 @@ const ChunksPicker = ({ entryFile, className }) => {
 					onKeyDown={handleItemKeyDownRef.current}
 					data-container="list-item"
 				>
-					<ListItemText primary={chunkName} />
 					<Checkbox
 						tabIndex={-1}
-						edge="end"
+						edge="start"
 						inputProps={{
 							"aria-labelledby": chunkName,
 							"data-checked": selectedChunksRef.current.has(chunkName)
@@ -234,6 +258,8 @@ const ChunksPicker = ({ entryFile, className }) => {
 						}}
 						checked={selectedChunksRef.current.has(chunkName)}
 					/>
+					<ListItemText primary={chunkName} />
+					<ChevronRightIcon edge="end" />
 				</ListItem>
 			</motion.div>
 		);
@@ -255,11 +281,6 @@ const ChunksPicker = ({ entryFile, className }) => {
 	return (
 		(!!crumbs[crumbs.length - 1]?.filepath || !!selectedChunks.size) && (
 			<Box mt={2} className={className} display="flex" flexDirection="column">
-				<Box flex="0 0 auto">
-					<Typography variant="h4" color="primary" gutterBottom>
-						Pick Chunks
-					</Typography>
-				</Box>
 				<Box
 					display="flex"
 					flex="1"
@@ -285,28 +306,49 @@ const ChunksPicker = ({ entryFile, className }) => {
 								.map(({ filepath, chunkName }, index) => (
 									<Link
 										key={filepath}
-										color="inherit"
+										color="secondary"
 										href=""
 										data-filepath={filepath}
 										data-chunk-name={chunkName}
 										onClick={handleCrumbClick}
 										data-index={index}
 									>
-										{chunkName}
+										<Typography variant="h6" color="secondary">
+											{chunkName}
+										</Typography>
 									</Link>
 								))}
-							<Typography color="textPrimary">
+							<Typography variant="h6" color="textPrimary">
 								{crumbs[crumbs.length - 1].chunkName}
 							</Typography>
 						</Breadcrumbs>
-						<TextField
-							flex="0 0 auto"
-							style={{ marginBottom: "20px", width: "35%" }}
-							label="Search Chunks"
-							value={keyword}
-							onChange={(e) => setKeyword(e.target.value)}
-						/>
+						<Box display="flex" alignItems="flex-end">
+							<TextField
+								variant="outlined"
+								flex="0 0 auto"
+								style={{ marginBottom: "20px", width: "35%" }}
+								label="Search Chunks"
+								value={keyword}
+								onChange={(e) => setKeyword(e.target.value)}
+							/>
+							<Box ml="auto">
+								<IconButton
+									disabled={!selectedChunks.size}
+									onClick={handleCopy}
+									aria-label="copy"
+								>
+									<FileCopyOutlinedIcon />
+								</IconButton>
+								<IconButton
+									onClick={handleDeselectAll}
+									aria-label="deselect all"
+								>
+									<DeleteOutlineIcon />
+								</IconButton>
+							</Box>
+						</Box>
 						<Box
+							mt={1}
 							ref={containerRef}
 							display="flex"
 							flex="1"
@@ -369,6 +411,17 @@ const ChunksPicker = ({ entryFile, className }) => {
 						</Box>
 					</Box>
 				</Box>
+				<Snackbar
+					open={shouldShowSnackbar}
+					anchorOrigin={{
+						vertical: "bottom",
+						horizontal: "right",
+					}}
+					autoHideDuration={2000}
+					onClose={hideSnackbar}
+					TransitionComponent={SlideTransition}
+					message={`${selectedChunks.size} chunks copied`}
+				/>
 			</Box>
 		)
 	);
