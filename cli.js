@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 "use strict";
-const React = require("react");
-const importJsx = require("import-jsx");
-const { render } = require("ink");
 const meow = require("meow");
 
 const cli = meow(`
@@ -20,17 +17,15 @@ const cli = meow(`
 `);
 
 /*
-if (!cli.flags.srcEntry) {
-	cli.flags.srcEntry = "my-entry.js";
-}
-
-if (!cli.flags.srcContext) {
-	cli.flags.srcContext = "./example-code/";
-}
+const cli = {
+	flags: { srcEntry: "space-app/client/index.js", srcContext: "./src/" },
+};
 */
-
 const entry = cli.flags.srcEntry;
 process.env.srcEntry = entry;
+process.env.pickEntry = cli.flags.pickEntry || cli.flags.srcEntry;
+process.env.srcContext = cli.flags.srcContext;
+process.env.shouldGenerateGraph = "0";
 
 try {
 	const fileInfoMap = require("./file-info-data.json");
@@ -38,18 +33,7 @@ try {
 		throw "lol";
 	}
 } catch (e) {
-	console.log("computing dependency graph...");
-	process.env.preProcessDone = "0";
-	const work = require("./pre-process");
-	work({ entry, srcContext: cli.flags.srcContext });
-	console.log("pre processing done!");
+	process.env.shouldGenerateGraph = "1";
 }
 
-process.env.preProcessDone = "1";
-const ui = importJsx("./ChooseDynamicImports");
-render(
-	React.createElement(ui, {
-		...cli.flags,
-		entry: cli.flags.pickEntry || cli.flags.srcEntry,
-	})
-);
+require("./src/server");

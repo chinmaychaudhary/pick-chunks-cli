@@ -6,7 +6,7 @@ const path = require("path");
 const {
 	getDynamicImports,
 	getParseCache,
-} = require("./src/get-dynamic-imports");
+} = require("./get-dynamic-imports");
 
 function work({ entry, srcContext }) {
 	getDynamicImports(entry, srcContext, true);
@@ -19,7 +19,7 @@ function work({ entry, srcContext }) {
 	}
 
 	fs.writeFileSync(
-		path.resolve(__dirname, "file-info-data.json"),
+		path.resolve(__dirname, "../file-info-data.json"),
 		JSON.stringify({[entry]: obj})
 	);
 }
