@@ -3,7 +3,7 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 
 import Popover from "@material-ui/core/Popover";
 import IconButton from "@material-ui/core/IconButton";
-import KeyboardIcon from "@material-ui/icons/Keyboard";
+import KeyboardOutlinedIcon from '@material-ui/icons/KeyboardOutlined';
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Box from "@material-ui/core/Box";
@@ -26,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
 	flex1: { flex: "1", minHeight: "0" },
 	logo: {
 		flex: "0 0 auto",
-		height: 64,
-		width: 64,
+		height: 44,
+		width: 44,
 		marginRight: theme.spacing(2),
 	},
 	shortcutIcon: { flex: "0 0 auto" },
@@ -99,7 +99,7 @@ function App() {
 			>
 				<Box display="flex" flex="0 0 auto" alignItems="center">
 					<img className={classes.logo} src={pcImg} alt="logo" />
-					<Typography variant="h4" color="textPrimary">
+					<Typography variant="h5" color="textPrimary">
 						Pick Chunks
 					</Typography>
 				</Box>
@@ -109,7 +109,7 @@ function App() {
 					aria-label="shortcuts"
 					className={classes.shortcutIcon}
 				>
-					<KeyboardIcon fontSize="large" />
+					<KeyboardOutlinedIcon fontSize="large" />
 				</IconButton>
 				<Popover
 					id="shortcuts"

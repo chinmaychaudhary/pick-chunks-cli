@@ -43,8 +43,8 @@ function getSegments(option) {
 const useStyles = makeStyles((theme) => ({
 	title: {
 		flex: "0 0 auto",
-		marginRight: theme.spacing(3),
-		marginBottom: '-6px'
+		marginRight: theme.spacing(2),
+		// marginBottom: '-6px'
 	},
 }));
 
@@ -58,7 +58,7 @@ export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
 	return (
 		<Box className={className} display="flex" alignItems="flex-end" mb={2}>
 			<Typography
-				variant="h4"
+				variant="h5"
 				color="primary"
 				className={classes.title}
 			>
