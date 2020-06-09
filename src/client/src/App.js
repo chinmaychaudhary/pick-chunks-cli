@@ -3,7 +3,7 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 
 import Popover from "@material-ui/core/Popover";
 import IconButton from "@material-ui/core/IconButton";
-import KeyboardOutlinedIcon from '@material-ui/icons/KeyboardOutlined';
+import KeyboardOutlinedIcon from "@material-ui/icons/KeyboardOutlined";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Box from "@material-ui/core/Box";
@@ -11,11 +11,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 
 import { useInitialiseGraph } from "./hooks/api/useInitialiseGraph";
 
 import { EntryFilePicker } from "./components/EntryFilePicker";
 import { ChunksPicker } from "./components/ChunksPicker";
+import { GraphBuilder } from "./components/graphBuilder";
 
 import pcImg from "./pc.svg";
 
@@ -87,7 +90,10 @@ function App() {
 	const hideShortcutPopover = useCallback(() => {
 		setPopoverVisibility(false);
 	}, []);
-
+	const [showGraph, setShowGraph] = useState(false);
+	const handleShowGraph = useCallback((e) => {
+		setShowGraph(e.target.checked);
+	});
 	return (
 		<Box padding={5} display="flex" flexDirection="column" height="100%">
 			<Box
@@ -103,6 +109,17 @@ function App() {
 						Pick Chunks
 					</Typography>
 				</Box>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={showGraph}
+							onChange={handleShowGraph}
+							name="Visualize"
+							color="primary"
+						/>
+					}
+					label="Visualize"
+				/>
 				<IconButton
 					onClick={handleShortcutClick}
 					ref={btnRef}
@@ -174,7 +191,11 @@ function App() {
 						entryFile={entryFile}
 						onEntryFileChange={setEntryFile}
 					/>
-					<ChunksPicker className={classes.flex1} entryFile={entryFile} />
+					{showGraph ? (
+						<GraphBuilder entryFile={entryFile} />
+					) : (
+						<ChunksPicker className={classes.flex1} entryFile={entryFile} />
+					)}
 				</>
 			)}
 		</Box>

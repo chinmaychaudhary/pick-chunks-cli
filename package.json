@@ -13,6 +13,7 @@
 		"@babel/parser": "^7.9.6",
 		"@babel/traverse": "^7.9.6",
 		"clipboardy": "^2.3.0",
+		"express": "^4.17.1",
 		"fuse.js": "^6.0.4",
 		"import-jsx": "^4.0.0",
 		"ink": "^2.7.1",

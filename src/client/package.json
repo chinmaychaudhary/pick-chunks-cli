@@ -13,8 +13,12 @@
     "framer-motion": "^1.11.0",
     "fuzzy-search": "^3.2.1",
     "react": "^16.13.1",
+    "react-d3-tree": "^1.16.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-query": "^1.5.7",
+    "react-scripts": "3.4.1",
+    "react-use": "15.2.2",
+    "react-window": "1.8.5"
   },
   "scripts": {
     "start": "react-scripts start",
