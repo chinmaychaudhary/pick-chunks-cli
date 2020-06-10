@@ -8,11 +8,28 @@ import Skeleton from "@material-ui/lab/Skeleton";
 
 import { useD3jsFormatQuery } from "../hooks/api/useD3jsFormatQuery";
 
-const GraphBuilder = ({ entryFile }) => {
-    const { data: treeFormat } = useD3jsFormatQuery(entryFile.filepath);
-	const [ targetRef, { width: svgWidth }] = useMeasure();
+const GraphBuilder = ({ entryFile, selectedChunks }) => {
+	const { data: treeFormat } = useD3jsFormatQuery(entryFile.filepath);
+	const [targetRef, { width: svgWidth }] = useMeasure();
 
-	// console.log(treeFormat);
+	const selectFormat = (treeFormat) => {
+		if (selectedChunks.has(treeFormat.name)) {
+			treeFormat["nodeSvgShape"] = {
+				shape: "rect",
+				shapeProps: {
+					width: 18,
+					height: 18,
+					x: -10,
+					y: -10,
+				},
+			};
+		} 
+		treeFormat.children.forEach((child) => {
+			selectFormat(child);
+		});
+		return treeFormat;
+	};
+
 	return (
 		entryFile &&
 		entryFile.filepath && (
@@ -27,23 +44,20 @@ const GraphBuilder = ({ entryFile }) => {
 					>
 						<Tree
 							orientation="vertical"
-							data={treeFormat}
-							// shouldCollapseNeighborNodes="True"
+							data={selectFormat(treeFormat)}
 							initialDepth={1}
 							separation={{
 								siblings: 1.3,
 								nonSiblings: 2,
 							}}
 							translate={{
-								x: svgWidth/2,
+								x: svgWidth / 2,
 								y: 50,
-                            }}
-                            scaleExtent={
-                                {
-                                    min: 0.1,
-                                    max: 1.5
-                                }
-                            }
+							}}
+							scaleExtent={{
+								min: 0.1,
+								max: 1.5,
+							}}
 							styles={{
 								links: {
 									stroke: "#F8F9FE",

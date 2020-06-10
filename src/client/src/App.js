@@ -222,6 +222,16 @@ function App() {
 									<ListItemText primary={"Inner/Leaf Node"} />
 								</Box>
 							</ListItem>
+							<ListItem>
+								<Box display="flex" alignItems="center" flex="1">
+									<ListItemText className={classes.shortcutCmd}>
+										<Typography>
+											<span style={{ fontSize: "1.8rem" }}>□</span>/◯
+										</Typography>
+									</ListItemText>
+									<ListItemText primary={"Selected/Unselected Node"} />
+								</Box>
+							</ListItem>
 						</List>
 					)}
 				</Popover>

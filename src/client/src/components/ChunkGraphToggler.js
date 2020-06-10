@@ -8,7 +8,7 @@ const ChunkGraphToggler = ({ showGraph, entryFile, className }) => {
 	return (
 		<>
 			{showGraph ? (
-				<GraphBuilder entryFile={entryFile} />
+				<GraphBuilder entryFile={entryFile} selectedChunks={selectedChunks} />
 			) : (
 				<ChunksPicker
 					className={className}
