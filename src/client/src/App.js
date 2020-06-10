@@ -74,6 +74,20 @@ const shortcutsInfo = [
 		desc: "Deselect Subgraph",
 	},
 ];
+const clickGraphInfo = [
+	{
+		cmd: "Click",
+		desc: "Display/Hide Children",
+	},
+	{
+		cmd: "Scroll",
+		desc: "Zoom In/Out",
+	},
+	{
+		cmd: "Drag",
+		desc: "Change View",
+	},
+];
 
 function App() {
 	const classes = useStyles();
@@ -109,25 +123,27 @@ function App() {
 						Pick Chunks
 					</Typography>
 				</Box>
-				<FormControlLabel
-					control={
-						<Switch
-							checked={showGraph}
-							onChange={handleShowGraph}
-							name="Visualize"
-							color="primary"
-						/>
-					}
-					label="Visualize"
-				/>
-				<IconButton
-					onClick={handleShortcutClick}
-					ref={btnRef}
-					aria-label="shortcuts"
-					className={classes.shortcutIcon}
-				>
-					<KeyboardOutlinedIcon fontSize="large" />
-				</IconButton>
+				<Box display="flex" flex="0 0 auto" alignItems="center">
+					<FormControlLabel
+						control={
+							<Switch
+								checked={showGraph}
+								onChange={handleShowGraph}
+								name="Visualize"
+								color="primary"
+							/>
+						}
+						label="Visualize"
+					/>
+					<IconButton
+						onClick={handleShortcutClick}
+						ref={btnRef}
+						aria-label="shortcuts"
+						className={classes.shortcutIcon}
+					>
+						<KeyboardOutlinedIcon fontSize="large" />
+					</IconButton>
+				</Box>
 				<Popover
 					id="shortcuts"
 					open={showPopover}
@@ -142,42 +158,73 @@ function App() {
 						horizontal: "center",
 					}}
 				>
-					<List
-						component="nav"
-						className={classes.popover}
-						aria-label="shortcuts popover"
-					>
-						{clickInfo.map(({ cmd, desc }, index) => (
-							<ListItem divider={index === clickInfo.length - 1}>
-								<Box display="flex" alignItems="center" flex="1">
-									<ListItemText className={classes.shortcutCmd}>
-										<Typography color="secondary">
-											<Box
-												component="span"
-												// border={1}
-												// padding={1}
-												// borderRadius="borderRadius"
-												// borderColor="text.primary"
-											>
-												{cmd}
-											</Box>
-										</Typography>
-									</ListItemText>
-									<ListItemText primary={desc} />
-								</Box>
-							</ListItem>
-						))}
-						{shortcutsInfo.map(({ cmd, desc }, index) => (
+					{!showGraph ? (
+						<List
+							component="nav"
+							className={classes.popover}
+							aria-label="shortcuts popover"
+						>
+							{clickInfo.map(({ cmd, desc }, index) => (
+								<ListItem divider={index === clickInfo.length - 1}>
+									<Box display="flex" alignItems="center" flex="1">
+										<ListItemText className={classes.shortcutCmd}>
+											<Typography color="secondary">
+												<Box
+													component="span"
+													// border={1}
+													// padding={1}
+													// borderRadius="borderRadius"
+													// borderColor="text.primary"
+												>
+													{cmd}
+												</Box>
+											</Typography>
+										</ListItemText>
+										<ListItemText primary={desc} />
+									</Box>
+								</ListItem>
+							))}
+							{shortcutsInfo.map(({ cmd, desc }, index) => (
+								<ListItem>
+									<Box display="flex" alignItems="center" flex="1">
+										<ListItemText className={classes.shortcutCmd}>
+											<Typography color="secondary">{cmd}</Typography>
+										</ListItemText>
+										<ListItemText primary={desc} />
+									</Box>
+								</ListItem>
+							))}
+						</List>
+					) : (
+						<List
+							component="nav"
+							className={classes.popover}
+							aria-label="shortcuts popover"
+						>
+							{clickGraphInfo.map(({ cmd, desc }, index) => (
+								<ListItem divider={index === clickGraphInfo.length - 1}>
+									<Box display="flex" alignItems="center" flex="1">
+										<ListItemText className={classes.shortcutCmd}>
+											<Typography color="secondary">
+												<Box component="span">{cmd}</Box>
+											</Typography>
+										</ListItemText>
+										<ListItemText primary={desc} />
+									</Box>
+								</ListItem>
+							))}
 							<ListItem>
 								<Box display="flex" alignItems="center" flex="1">
-									<ListItemText className={classes.shortcutCmd}>
-										<Typography color="secondary">{cmd}</Typography>
+									<ListItemText className={classes.shortcutCmd} >
+										<Typography>	
+										<span style={{ fontSize: "larger" }} >⬤</span>/◯
+										</Typography>
 									</ListItemText>
-									<ListItemText primary={desc} />
+									<ListItemText primary={"Inner/Leaf Node"} />
 								</Box>
 							</ListItem>
-						))}
-					</List>
+						</List>
+					)}
 				</Popover>
 			</Box>
 			{loading ? (
