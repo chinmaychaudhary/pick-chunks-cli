@@ -95,6 +95,20 @@ function parseFile(filepath, srcContext) {
 					dynamicImports.set(cName, { filepath: fp, chunkName: cName });
 				}
 			}
+			else if (callExpNode.callee.name === "require") {
+				const arg = callExpNode.arguments[0];
+				if (!isJsFile(arg.value)) {
+				  return;
+				}
+				const fp = getFilePath(dir, srcContext, arg.value);
+				if (fp) {
+				  if (typeof fp !== "string") {
+					debugger;
+				  }
+				  staticImports.push(fp);
+				}
+			  }
+		
 		},
 		ExportNamedDeclaration(astPath) {
 			const exportNode = astPath.node;

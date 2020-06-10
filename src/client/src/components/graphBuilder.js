@@ -12,7 +12,7 @@ const GraphBuilder = ({ entryFile }) => {
     const { data: treeFormat } = useD3jsFormatQuery(entryFile.filepath);
 	const [ targetRef, { width: svgWidth }] = useMeasure();
 
-	console.log(treeFormat);
+	// console.log(treeFormat);
 	return (
 		entryFile &&
 		entryFile.filepath && (
