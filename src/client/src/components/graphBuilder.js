@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import Tree from "react-d3-tree";
 
 import useMeasure from "react-use/lib/useMeasure";

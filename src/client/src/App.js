@@ -17,8 +17,7 @@ import Switch from "@material-ui/core/Switch";
 import { useInitialiseGraph } from "./hooks/api/useInitialiseGraph";
 
 import { EntryFilePicker } from "./components/EntryFilePicker";
-import { ChunksPicker } from "./components/ChunksPicker";
-import { GraphBuilder } from "./components/graphBuilder";
+import { ChunkGraphToggler } from "./components/ChunkGraphToggler";
 
 import pcImg from "./pc.svg";
 
@@ -215,9 +214,9 @@ function App() {
 							))}
 							<ListItem>
 								<Box display="flex" alignItems="center" flex="1">
-									<ListItemText className={classes.shortcutCmd} >
-										<Typography>	
-										<span style={{ fontSize: "larger" }} >⬤</span>/◯
+									<ListItemText className={classes.shortcutCmd}>
+										<Typography>
+											<span style={{ fontSize: "larger" }}>⬤</span>/◯
 										</Typography>
 									</ListItemText>
 									<ListItemText primary={"Inner/Leaf Node"} />
@@ -238,11 +237,19 @@ function App() {
 						entryFile={entryFile}
 						onEntryFileChange={setEntryFile}
 					/>
-					{showGraph ? (
+					<ChunkGraphToggler
+						entryFile={entryFile}
+						className={classes.flex1}
+						showGraph={showGraph}
+					/>
+					{/* {showGraph ? (
 						<GraphBuilder entryFile={entryFile} />
 					) : (
-						<ChunksPicker className={classes.flex1} entryFile={entryFile} />
-					)}
+						<ChunksPicker
+							className={classes.flex1}
+							entryFile={entryFile}
+						/>
+					)} */}
 				</>
 			)}
 		</Box>
