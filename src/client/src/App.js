@@ -17,7 +17,8 @@ import Switch from "@material-ui/core/Switch";
 import { useInitialiseGraph } from "./hooks/api/useInitialiseGraph";
 
 import { EntryFilePicker } from "./components/EntryFilePicker";
-import { ChunkGraphToggler } from "./components/ChunkGraphToggler";
+import { ChunksPicker } from "./components/ChunksPicker";
+import { GraphBuilder } from "./components/GraphBuilder";
 
 import pcImg from "./pc.svg";
 
@@ -107,6 +108,7 @@ function App() {
 	const handleShowGraph = useCallback((e) => {
 		setShowGraph(e.target.checked);
 	});
+	const [selectedChunks, setSelectedChunks] = useState(new Set());
 	return (
 		<Box padding={5} display="flex" flexDirection="column" height="100%">
 			<Box
@@ -129,7 +131,7 @@ function App() {
 								checked={showGraph}
 								onChange={handleShowGraph}
 								name="Visualize"
-								color="primary"
+								color="secondary"
 							/>
 						}
 						label="Visualize"
@@ -201,7 +203,7 @@ function App() {
 							aria-label="shortcuts popover"
 						>
 							{clickGraphInfo.map(({ cmd, desc }, index) => (
-								<ListItem divider={index === clickGraphInfo.length - 1}>
+								<ListItem>
 									<Box display="flex" alignItems="center" flex="1">
 										<ListItemText className={classes.shortcutCmd}>
 											<Typography color="secondary">
@@ -212,26 +214,6 @@ function App() {
 									</Box>
 								</ListItem>
 							))}
-							<ListItem>
-								<Box display="flex" alignItems="center" flex="1">
-									<ListItemText className={classes.shortcutCmd}>
-										<Typography>
-											<span style={{ fontSize: "larger" }}>⬤</span>/◯
-										</Typography>
-									</ListItemText>
-									<ListItemText primary={"Inner/Leaf Node"} />
-								</Box>
-							</ListItem>
-							<ListItem>
-								<Box display="flex" alignItems="center" flex="1">
-									<ListItemText className={classes.shortcutCmd}>
-										<Typography>
-											<span style={{ fontSize: "1.8rem" }}>□</span>/◯
-										</Typography>
-									</ListItemText>
-									<ListItemText primary={"Selected/Unselected Node"} />
-								</Box>
-							</ListItem>
 						</List>
 					)}
 				</Popover>
@@ -247,19 +229,19 @@ function App() {
 						entryFile={entryFile}
 						onEntryFileChange={setEntryFile}
 					/>
-					<ChunkGraphToggler
-						entryFile={entryFile}
-						className={classes.flex1}
-						showGraph={showGraph}
-					/>
-					{/* {showGraph ? (
-						<GraphBuilder entryFile={entryFile} />
+					{showGraph ? (
+						<GraphBuilder
+							entryFile={entryFile}
+							selectedChunks={selectedChunks}
+						/>
 					) : (
 						<ChunksPicker
 							className={classes.flex1}
 							entryFile={entryFile}
+							setSelectedChunks={setSelectedChunks}
+							selectedChunks={selectedChunks}
 						/>
-					)} */}
+					)}
 				</>
 			)}
 		</Box>
