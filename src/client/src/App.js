@@ -3,7 +3,7 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 
 import Popover from "@material-ui/core/Popover";
 import IconButton from "@material-ui/core/IconButton";
-import KeyboardOutlinedIcon from '@material-ui/icons/KeyboardOutlined';
+import KeyboardOutlinedIcon from "@material-ui/icons/KeyboardOutlined";
 import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Box from "@material-ui/core/Box";
@@ -11,11 +11,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 
 import { useInitialiseGraph } from "./hooks/api/useInitialiseGraph";
 
 import { EntryFilePicker } from "./components/EntryFilePicker";
 import { ChunksPicker } from "./components/ChunksPicker";
+import { GraphBuilder } from "./components/GraphBuilder";
 
 import pcImg from "./pc.svg";
 
@@ -71,6 +74,20 @@ const shortcutsInfo = [
 		desc: "Deselect Subgraph",
 	},
 ];
+const clickGraphInfo = [
+	{
+		cmd: "Click",
+		desc: "Display/Hide Children",
+	},
+	{
+		cmd: "Scroll",
+		desc: "Zoom In/Out",
+	},
+	{
+		cmd: "Drag",
+		desc: "Change View",
+	},
+];
 
 function App() {
 	const classes = useStyles();
@@ -87,7 +104,11 @@ function App() {
 	const hideShortcutPopover = useCallback(() => {
 		setPopoverVisibility(false);
 	}, []);
-
+	const [showGraph, setShowGraph] = useState(false);
+	const handleShowGraph = useCallback((e) => {
+		setShowGraph(e.target.checked);
+	});
+	const [selectedChunks, setSelectedChunks] = useState(new Set());
 	return (
 		<Box padding={5} display="flex" flexDirection="column" height="100%">
 			<Box
@@ -103,14 +124,27 @@ function App() {
 						Pick Chunks
 					</Typography>
 				</Box>
-				<IconButton
-					onClick={handleShortcutClick}
-					ref={btnRef}
-					aria-label="shortcuts"
-					className={classes.shortcutIcon}
-				>
-					<KeyboardOutlinedIcon fontSize="large" />
-				</IconButton>
+				<Box display="flex" flex="0 0 auto" alignItems="center">
+					<FormControlLabel
+						control={
+							<Switch
+								checked={showGraph}
+								onChange={handleShowGraph}
+								name="Visualize"
+								color="secondary"
+							/>
+						}
+						label="Visualize"
+					/>
+					<IconButton
+						onClick={handleShortcutClick}
+						ref={btnRef}
+						aria-label="shortcuts"
+						className={classes.shortcutIcon}
+					>
+						<KeyboardOutlinedIcon fontSize="large" />
+					</IconButton>
+				</Box>
 				<Popover
 					id="shortcuts"
 					open={showPopover}
@@ -125,42 +159,63 @@ function App() {
 						horizontal: "center",
 					}}
 				>
-					<List
-						component="nav"
-						className={classes.popover}
-						aria-label="shortcuts popover"
-					>
-						{clickInfo.map(({ cmd, desc }, index) => (
-							<ListItem divider={index === clickInfo.length - 1}>
-								<Box display="flex" alignItems="center" flex="1">
-									<ListItemText className={classes.shortcutCmd}>
-										<Typography color="secondary">
-											<Box
-												component="span"
-												// border={1}
-												// padding={1}
-												// borderRadius="borderRadius"
-												// borderColor="text.primary"
-											>
-												{cmd}
-											</Box>
-										</Typography>
-									</ListItemText>
-									<ListItemText primary={desc} />
-								</Box>
-							</ListItem>
-						))}
-						{shortcutsInfo.map(({ cmd, desc }, index) => (
-							<ListItem>
-								<Box display="flex" alignItems="center" flex="1">
-									<ListItemText className={classes.shortcutCmd}>
-										<Typography color="secondary">{cmd}</Typography>
-									</ListItemText>
-									<ListItemText primary={desc} />
-								</Box>
-							</ListItem>
-						))}
-					</List>
+					{!showGraph ? (
+						<List
+							component="nav"
+							className={classes.popover}
+							aria-label="shortcuts popover"
+						>
+							{clickInfo.map(({ cmd, desc }, index) => (
+								<ListItem divider={index === clickInfo.length - 1}>
+									<Box display="flex" alignItems="center" flex="1">
+										<ListItemText className={classes.shortcutCmd}>
+											<Typography color="secondary">
+												<Box
+													component="span"
+													// border={1}
+													// padding={1}
+													// borderRadius="borderRadius"
+													// borderColor="text.primary"
+												>
+													{cmd}
+												</Box>
+											</Typography>
+										</ListItemText>
+										<ListItemText primary={desc} />
+									</Box>
+								</ListItem>
+							))}
+							{shortcutsInfo.map(({ cmd, desc }, index) => (
+								<ListItem>
+									<Box display="flex" alignItems="center" flex="1">
+										<ListItemText className={classes.shortcutCmd}>
+											<Typography color="secondary">{cmd}</Typography>
+										</ListItemText>
+										<ListItemText primary={desc} />
+									</Box>
+								</ListItem>
+							))}
+						</List>
+					) : (
+						<List
+							component="nav"
+							className={classes.popover}
+							aria-label="shortcuts popover"
+						>
+							{clickGraphInfo.map(({ cmd, desc }, index) => (
+								<ListItem>
+									<Box display="flex" alignItems="center" flex="1">
+										<ListItemText className={classes.shortcutCmd}>
+											<Typography color="secondary">
+												<Box component="span">{cmd}</Box>
+											</Typography>
+										</ListItemText>
+										<ListItemText primary={desc} />
+									</Box>
+								</ListItem>
+							))}
+						</List>
+					)}
 				</Popover>
 			</Box>
 			{loading ? (
@@ -174,7 +229,19 @@ function App() {
 						entryFile={entryFile}
 						onEntryFileChange={setEntryFile}
 					/>
-					<ChunksPicker className={classes.flex1} entryFile={entryFile} />
+					{showGraph ? (
+						<GraphBuilder
+							entryFile={entryFile}
+							selectedChunks={selectedChunks}
+						/>
+					) : (
+						<ChunksPicker
+							className={classes.flex1}
+							entryFile={entryFile}
+							setSelectedChunks={setSelectedChunks}
+							selectedChunks={selectedChunks}
+						/>
+					)}
 				</>
 			)}
 		</Box>

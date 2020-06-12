@@ -64,7 +64,7 @@ function SlideTransition(props) {
 	return <Slide {...props} direction="left" />;
 }
 
-const ChunksPicker = ({ entryFile, className }) => {
+const ChunksPicker = ({ entryFile, className, selectedChunks, setSelectedChunks }) => {
 	const classes = useStyles();
 
 	const loadAllDescendantChunks = useAllDescendantChunksQuery();
@@ -85,7 +85,7 @@ const ChunksPicker = ({ entryFile, className }) => {
 	const [processing, setProcessing] = useState(false);
 
 	const [keyword, setKeyword] = useState("");
-	const [selectedChunks, setSelectedChunks] = useState(new Set());
+	// const [selectedChunks, setSelectedChunks] = useState(new Set());
 
 	const fuzSearch = useMemo(() => {
 		return new FuzzySearch(childrenChunks, ["chunkName"]);

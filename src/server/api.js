@@ -23,6 +23,26 @@ function generateGraph() {
 	}
 }
 
+function createTreeFormat(entryFile, isNodeDone = new Map()){
+    isNodeDone.set(entryFile.filepath, true);
+    const tmpObj = {};
+    tmpObj["name"] = entryFile.chunkName;
+    tmpObj["children"] = [];
+    const childrenChunks = getChunks(entryFile.filepath);
+    childrenChunks.forEach((child) => {
+        if (!isNodeDone.has(child.filepath)) {
+            tmpObj["children"].push(createTreeFormat(child, isNodeDone));
+        } else {
+            tmpObj["children"].push({
+                name: child.chunkName,
+                children: [],
+                repeated: true,
+            });
+        }
+    });
+    return tmpObj;
+};
+
 function initialiseGraph(req, res) {
 	generateGraph();
 	res.sendStatus(204);
@@ -38,6 +58,15 @@ function getAllDescendantChunks(req, res) {
 	generateGraph();
 	const chunks = getChunks(req.query.fp, true);
 	res.send(JSON.stringify(chunks));
+}
+
+function getD3jsFormat(req, res){
+	generateGraph();
+	const d3jsFormatData = createTreeFormat({
+		filepath: req.query.fp,
+		chunkName: path.basename(req.query.fp, ".js"),
+	});
+	res.send(JSON.stringify(d3jsFormatData));
 }
 
 const _once = require("lodash/once");
@@ -81,5 +110,7 @@ router.get("/children-chunks", getChildrenChunks);
 router.get("/all-descendant-chunks", getAllDescendantChunks);
 
 router.get("/search-files", searchFiles);
+
+router.get("/d3js-format", getD3jsFormat);
 
 module.exports = router;

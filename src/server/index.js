@@ -14,5 +14,10 @@ app.get("/", function (req, res) {
 });
 
 app.listen(4000, () => {
+	console.log("Server started!");
+	process.env.srcEntry = path.resolve("../../example-code/my-entry.js");
+	process.env.srcContext = path.resolve("../../example-code/");
+	process.env.shouldGenerateGraph = "1";
+	console.log(process.env);
 	open("http://localhost:4000");
 });

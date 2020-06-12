@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {useDebounce, useDebounceCallback} from "@react-hook/debounce";
 
 import { useFileSearchQuery } from "../hooks/api/useFileSearchQuery";
 
@@ -51,7 +52,8 @@ const useStyles = makeStyles((theme) => ({
 export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
 	const classes = useStyles();
 	const [searchKeyword, setSearchKeyword] = useState(entryFile?.name || "");
-	const { data, status } = useFileSearchQuery(searchKeyword);
+	const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useDebounce(searchKeyword, 250);
+	const { data, status } =  useFileSearchQuery(debouncedSearchKeyword);
 	const [open, setOpen] = React.useState(false);
 	const loading = status === "loading";
 
@@ -81,6 +83,7 @@ export function EntryFilePicker({ entryFile, onEntryFileChange, className }) {
 				inputValue={searchKeyword}
 				onInputChange={(event, newInputValue) => {
 					setSearchKeyword(newInputValue);
+					setDebouncedSearchKeyword(searchKeyword);
 				}}
 				getOptionLabel={(option) => option.name}
 				getOptionSelected={(option, value) => option.name === value.name}
