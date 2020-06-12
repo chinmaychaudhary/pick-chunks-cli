@@ -41,12 +41,14 @@ const GraphBuilder = ({ entryFile, selectedChunks }) => {
 	};
 
 	const onMouseOverHandler = (nodeData) => {
-		if (nodeData._children) {
+		if (nodeData && nodeData._children) {
 			document.getElementById(nodeData.id).children[0].style.r = 13;
 		}
 	};
 	const onMouseOutHandler = (nodeData) => {
-		document.getElementById(nodeData.id).children[0].style.r = 11;
+		if(nodeData){
+			document.getElementById(nodeData.id).children[0].style.r = 11;
+		}
 	};
 	return (
 		entryFile &&
