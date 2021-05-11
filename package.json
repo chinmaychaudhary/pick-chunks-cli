@@ -17,7 +17,7 @@
 		"import-jsx": "^4.0.0",
 		"ink": "^2.7.1",
 		"ink-text-input": "^3.2.2",
-		"lodash": "^4.17.15",
+		"lodash": "^4.17.21",
 		"meow": "^7.0.1",
 		"open": "^7.0.4",
 		"prop-types": "^15.7.2",
